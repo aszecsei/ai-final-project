@@ -1,0 +1,18 @@
+type decision_tree_leaf = {
+  result: string;
+}
+
+type decision_tree_node = {
+  category: string;
+  children: decision_tree_child list 
+}
+
+type decision_tree_child = {
+  option: string;
+  child: decision_tree
+}
+
+type decision_tree = [
+  | Leaf of decision_tree_leaf
+  | Node of decision_tree_node
+]

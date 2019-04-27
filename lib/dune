@@ -1,2 +1,3 @@
 (library
-  (name decision_tree))
+  (name lib)
+  (libraries yojson atdgen))
