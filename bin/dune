@@ -1,0 +1,3 @@
+(executables
+  (names dtl classify)
+  (libraries decision_tree))
