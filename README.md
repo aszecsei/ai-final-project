@@ -2,6 +2,20 @@
 
 > Decision Tree Learning
 
+## Setup
+
+> TODO
+
+## How To Run
+
+> TODO
+
+## Roles
+
+- Coordinator: Diego
+- Recorder: Willem
+- Checker: Alic
+
 ## Project Description
 
 You will implement and compare experimentally some of the learning methods for decision trees discussed in Chapter 18 of the textbook. You will run your experiments on a selection of the datasets available from the [Machine Learning Repository](http://archive.ics.uci.edu/ml/datasets.php). The datasets can be filtered according to several criteria. Choose 4 multivariate, classification datasets with "Categorical" attribute type and 100 or more examples. Each of these datasets is stored in a text file that consists of one example per line. Each example is a comma-separated sequence of values for the problem attributes. The attributes are documented in a companion file with extension `.name`.
@@ -12,7 +26,7 @@ Write a program `DTL` that implements the basic decision tree learning algorithm
 
 Write a separate classifier, a function that takes two file names as input: one for a file containing a decision tree and one for a file containing a corresponding dataset. It should print on the standard output a classification for each example in the dataset according to the input decision tree. Note that the classifier will need to parse the decision tree. You can use publicly available libraries to do that if you adopt s-expressions or JSON. Alternatively, you can write your own parser (see previous project).
 
-__HINT__: You can use the classifier to do a sanity check on your decision tree learning function by running a learned tree over the same dataset used to construct it, and verifying that it classifies the examples correctly.
+**HINT**: You can use the classifier to do a sanity check on your decision tree learning function by running a learned tree over the same dataset used to construct it, and verifying that it classifies the examples correctly.
 
 ### Part 2
 

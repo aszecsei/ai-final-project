@@ -41,15 +41,15 @@ let remainder attribute examples possible_values =
 let importance attribute examples possible_values =
   1.0 -. (remainder attribute examples possible_values)
 
-let argmax examples attributes =
+let argmax examples attributes possible_classifications =
   Array.fold_left (fun agg value ->
     let e1 = (importance value examples) in
     match agg with
-    | Some(v2) when (importance v2 examples) < e1 -> agg
+    | Some(v2) when (importance v2 examples possible_classifications) < e1 -> agg
     | _ -> Some(value)
   ) None attributes
 
-let rec decision_tree_learning examples attributes parent_examples =
+let rec decision_tree_learning examples attributes parent_examples possible_classifications =
   if Array.length examples = 0 then
     (`Leaf { result=(plurality_value parent_examples).value; } :> decision_tree)
   else
@@ -59,7 +59,7 @@ let rec decision_tree_learning examples attributes parent_examples =
     else if (Array.length attributes = 0) then
       (`Leaf { result=(plurality_value examples).value; } :> decision_tree)
     else
-      match (argmax examples attributes) with
+      match (argmax examples attributes possible_classifications) with
       | Some(a) -> (
           let tree = `Node { category=a.name; children=[]; } in
           (Array.fold_left (fun agg value ->
