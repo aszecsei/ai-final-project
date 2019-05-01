@@ -14,6 +14,7 @@ and decision_tree_child = Decision_tree_t.decision_tree_child = {
 
 and decision_tree_node = Decision_tree_t.decision_tree_node = {
   category: string;
+  category_index: int;
   children: decision_tree_child list
 }
 

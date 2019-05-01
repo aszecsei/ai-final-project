@@ -4,6 +4,7 @@ type decision_tree_leaf = {
 
 type decision_tree_node = {
   category: string;
+  category_index: int;
   children: decision_tree_child list 
 }
 

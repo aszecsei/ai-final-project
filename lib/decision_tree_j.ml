@@ -14,6 +14,7 @@ and decision_tree_child = Decision_tree_t.decision_tree_child = {
 
 and decision_tree_node = Decision_tree_t.decision_tree_node = {
   category: string;
+  category_index: int;
   children: decision_tree_child list
 }
 
@@ -185,6 +186,15 @@ and write_decision_tree_node : _ -> decision_tree_node -> _ = (
       Yojson.Safe.write_string
     )
       ob x.category;
+    if !is_first then
+      is_first := false
+    else
+      Bi_outbuf.add_char ob ',';
+    Bi_outbuf.add_string ob "\"category_index\":";
+    (
+      Yojson.Safe.write_int
+    )
+      ob x.category_index;
     if !is_first then
       is_first := false
     else
@@ -397,6 +407,7 @@ and read_decision_tree_node = (
     Yojson.Safe.read_space p lb;
     Yojson.Safe.read_lcurl p lb;
     let field_category = ref (Obj.magic (Sys.opaque_identity 0.0)) in
+    let field_category_index = ref (Obj.magic (Sys.opaque_identity 0.0)) in
     let field_children = ref (Obj.magic (Sys.opaque_identity 0.0)) in
     let bits0 = ref 0 in
     try
@@ -407,31 +418,45 @@ and read_decision_tree_node = (
         fun s pos len ->
           if pos < 0 || len < 0 || pos + len > String.length s then
             invalid_arg "out-of-bounds substring position or length";
-          if len = 8 && String.unsafe_get s pos = 'c' then (
-            match String.unsafe_get s (pos+1) with
-              | 'a' -> (
-                  if String.unsafe_get s (pos+2) = 't' && String.unsafe_get s (pos+3) = 'e' && String.unsafe_get s (pos+4) = 'g' && String.unsafe_get s (pos+5) = 'o' && String.unsafe_get s (pos+6) = 'r' && String.unsafe_get s (pos+7) = 'y' then (
-                    0
-                  )
-                  else (
-                    -1
-                  )
+          match len with
+            | 8 -> (
+                if String.unsafe_get s pos = 'c' then (
+                  match String.unsafe_get s (pos+1) with
+                    | 'a' -> (
+                        if String.unsafe_get s (pos+2) = 't' && String.unsafe_get s (pos+3) = 'e' && String.unsafe_get s (pos+4) = 'g' && String.unsafe_get s (pos+5) = 'o' && String.unsafe_get s (pos+6) = 'r' && String.unsafe_get s (pos+7) = 'y' then (
+                          0
+                        )
+                        else (
+                          -1
+                        )
+                      )
+                    | 'h' -> (
+                        if String.unsafe_get s (pos+2) = 'i' && String.unsafe_get s (pos+3) = 'l' && String.unsafe_get s (pos+4) = 'd' && String.unsafe_get s (pos+5) = 'r' && String.unsafe_get s (pos+6) = 'e' && String.unsafe_get s (pos+7) = 'n' then (
+                          2
+                        )
+                        else (
+                          -1
+                        )
+                      )
+                    | _ -> (
+                        -1
+                      )
                 )
-              | 'h' -> (
-                  if String.unsafe_get s (pos+2) = 'i' && String.unsafe_get s (pos+3) = 'l' && String.unsafe_get s (pos+4) = 'd' && String.unsafe_get s (pos+5) = 'r' && String.unsafe_get s (pos+6) = 'e' && String.unsafe_get s (pos+7) = 'n' then (
-                    1
-                  )
-                  else (
-                    -1
-                  )
-                )
-              | _ -> (
+                else (
                   -1
                 )
-          )
-          else (
-            -1
-          )
+              )
+            | 14 -> (
+                if String.unsafe_get s pos = 'c' && String.unsafe_get s (pos+1) = 'a' && String.unsafe_get s (pos+2) = 't' && String.unsafe_get s (pos+3) = 'e' && String.unsafe_get s (pos+4) = 'g' && String.unsafe_get s (pos+5) = 'o' && String.unsafe_get s (pos+6) = 'r' && String.unsafe_get s (pos+7) = 'y' && String.unsafe_get s (pos+8) = '_' && String.unsafe_get s (pos+9) = 'i' && String.unsafe_get s (pos+10) = 'n' && String.unsafe_get s (pos+11) = 'd' && String.unsafe_get s (pos+12) = 'e' && String.unsafe_get s (pos+13) = 'x' then (
+                  1
+                )
+                else (
+                  -1
+                )
+              )
+            | _ -> (
+                -1
+              )
       in
       let i = Yojson.Safe.map_ident p f lb in
       Atdgen_runtime.Oj_run.read_until_field_value p lb;
@@ -445,12 +470,19 @@ and read_decision_tree_node = (
             );
             bits0 := !bits0 lor 0x1;
           | 1 ->
+            field_category_index := (
+              (
+                Atdgen_runtime.Oj_run.read_int
+              ) p lb
+            );
+            bits0 := !bits0 lor 0x2;
+          | 2 ->
             field_children := (
               (
                 read__1
               ) p lb
             );
-            bits0 := !bits0 lor 0x2;
+            bits0 := !bits0 lor 0x4;
           | _ -> (
               Yojson.Safe.skip_json p lb
             )
@@ -463,31 +495,45 @@ and read_decision_tree_node = (
           fun s pos len ->
             if pos < 0 || len < 0 || pos + len > String.length s then
               invalid_arg "out-of-bounds substring position or length";
-            if len = 8 && String.unsafe_get s pos = 'c' then (
-              match String.unsafe_get s (pos+1) with
-                | 'a' -> (
-                    if String.unsafe_get s (pos+2) = 't' && String.unsafe_get s (pos+3) = 'e' && String.unsafe_get s (pos+4) = 'g' && String.unsafe_get s (pos+5) = 'o' && String.unsafe_get s (pos+6) = 'r' && String.unsafe_get s (pos+7) = 'y' then (
-                      0
-                    )
-                    else (
-                      -1
-                    )
+            match len with
+              | 8 -> (
+                  if String.unsafe_get s pos = 'c' then (
+                    match String.unsafe_get s (pos+1) with
+                      | 'a' -> (
+                          if String.unsafe_get s (pos+2) = 't' && String.unsafe_get s (pos+3) = 'e' && String.unsafe_get s (pos+4) = 'g' && String.unsafe_get s (pos+5) = 'o' && String.unsafe_get s (pos+6) = 'r' && String.unsafe_get s (pos+7) = 'y' then (
+                            0
+                          )
+                          else (
+                            -1
+                          )
+                        )
+                      | 'h' -> (
+                          if String.unsafe_get s (pos+2) = 'i' && String.unsafe_get s (pos+3) = 'l' && String.unsafe_get s (pos+4) = 'd' && String.unsafe_get s (pos+5) = 'r' && String.unsafe_get s (pos+6) = 'e' && String.unsafe_get s (pos+7) = 'n' then (
+                            2
+                          )
+                          else (
+                            -1
+                          )
+                        )
+                      | _ -> (
+                          -1
+                        )
                   )
-                | 'h' -> (
-                    if String.unsafe_get s (pos+2) = 'i' && String.unsafe_get s (pos+3) = 'l' && String.unsafe_get s (pos+4) = 'd' && String.unsafe_get s (pos+5) = 'r' && String.unsafe_get s (pos+6) = 'e' && String.unsafe_get s (pos+7) = 'n' then (
-                      1
-                    )
-                    else (
-                      -1
-                    )
-                  )
-                | _ -> (
+                  else (
                     -1
                   )
-            )
-            else (
-              -1
-            )
+                )
+              | 14 -> (
+                  if String.unsafe_get s pos = 'c' && String.unsafe_get s (pos+1) = 'a' && String.unsafe_get s (pos+2) = 't' && String.unsafe_get s (pos+3) = 'e' && String.unsafe_get s (pos+4) = 'g' && String.unsafe_get s (pos+5) = 'o' && String.unsafe_get s (pos+6) = 'r' && String.unsafe_get s (pos+7) = 'y' && String.unsafe_get s (pos+8) = '_' && String.unsafe_get s (pos+9) = 'i' && String.unsafe_get s (pos+10) = 'n' && String.unsafe_get s (pos+11) = 'd' && String.unsafe_get s (pos+12) = 'e' && String.unsafe_get s (pos+13) = 'x' then (
+                    1
+                  )
+                  else (
+                    -1
+                  )
+                )
+              | _ -> (
+                  -1
+                )
         in
         let i = Yojson.Safe.map_ident p f lb in
         Atdgen_runtime.Oj_run.read_until_field_value p lb;
@@ -501,12 +547,19 @@ and read_decision_tree_node = (
               );
               bits0 := !bits0 lor 0x1;
             | 1 ->
+              field_category_index := (
+                (
+                  Atdgen_runtime.Oj_run.read_int
+                ) p lb
+              );
+              bits0 := !bits0 lor 0x2;
+            | 2 ->
               field_children := (
                 (
                   read__1
                 ) p lb
               );
-              bits0 := !bits0 lor 0x2;
+              bits0 := !bits0 lor 0x4;
             | _ -> (
                 Yojson.Safe.skip_json p lb
               )
@@ -514,10 +567,11 @@ and read_decision_tree_node = (
       done;
       assert false;
     with Yojson.End_of_object -> (
-        if !bits0 <> 0x3 then Atdgen_runtime.Oj_run.missing_fields p [| !bits0 |] [| "category"; "children" |];
+        if !bits0 <> 0x7 then Atdgen_runtime.Oj_run.missing_fields p [| !bits0 |] [| "category"; "category_index"; "children" |];
         (
           {
             category = !field_category;
+            category_index = !field_category_index;
             children = !field_children;
           }
          : decision_tree_node)

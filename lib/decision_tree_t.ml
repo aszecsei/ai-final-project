@@ -12,5 +12,6 @@ and decision_tree_child = { option: string; child: decision_tree }
 
 and decision_tree_node = {
   category: string;
+  category_index: int;
   children: decision_tree_child list
 }
