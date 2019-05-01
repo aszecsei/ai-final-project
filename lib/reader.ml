@@ -55,7 +55,7 @@ let read_gen (file:string) (cci:int) : example list=
                 close_in inf;
                 List.rev !exs
 ;;
-print_example_list (read_gen "test.txt" 0);;
+(*print_example_list (read_gen "test.txt" 0);;*)
 
 Random.self_init ();;
 let sublist_ex (exs:example list) (number:int) : example list=
@@ -73,7 +73,7 @@ let sublist_ex (exs:example list) (number:int) : example list=
         subExs (shuffle exs) number
 ;;
 
-print_example_list (sublist_ex (read_gen "test.txt" 0) 3)
+(*print_example_list (sublist_ex (read_gen "test.txt" 0) 3)*)
 
 let write_gen (file:string) (exs:example list) =
         let outf = open_out file in
@@ -85,4 +85,4 @@ let write_gen (file:string) (exs:example list) =
         fprint_exs exs;
         close_out outf;
 ;;
-write_gen "testout.txt" (sublist_ex (read_gen "test.txt" 0) 3);;
+(*write_gen "testout.txt" (sublist_ex (read_gen "test.txt" 0) 3);;*)
