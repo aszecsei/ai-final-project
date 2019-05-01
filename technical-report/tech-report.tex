@@ -1,5 +1,7 @@
 \documentclass[screen, authorversion, nonacm, sigconf]{acmart}
 
+\usepackage[linesnumbered,commentsnumbered,ruled]{algorithm2e}
+
 \begin{document}
 
 \title{Exploring the Impact of Decision Tree Depth}
@@ -64,6 +66,27 @@ Additionally, decision tree models can be constrained by size to combat overfitt
 \section{Methods}
 
 The foundation of our decision tree algorithm was the one provided by Russell and Norvig \cite{russell_norvig_2010} which, in turn, is based on the ID3 algorithm \cite{Quinlan1986}.
+
+\begin{function}
+  \SetKwFunction{PluralityValue}{Plurality-Value}
+  \SetKwFunction{Importance}{Importance}
+  \caption{DecisionTreeLearning($examples$, $attributes$, $parent\_examples$, $depth$)}
+  \label{algo:DecisionTreeLearning}
+  \uIf{$examples$ is empty}{\Return{\PluralityValue{$parent\_examples$}}}
+  \uElseIf{$depth = 0$}{\Return{\PluralityValue{$examples$}}}
+  \uElseIf{all $examples$ have the same classification $c$}{\Return{a leaf node $c$}}
+  \ElseIf{$attributes$ is empty}{\Return{\PluralityValue{$examples$}}}
+  $A \gets argmax_{a \in attributes} \Importance{a, examples}$\;
+  $tree \gets$ a new decision tree with root test $A$\;
+  \ForEach{value $v_k$ of $A$}{
+    $exs \gets \left\{e : e \in examples \text{ and } e.A = v_k\right\}$\;
+    $subtree \gets \DecisionTreeLearning{exs, attributes - A, examples, depth - 1}$\;
+    add a branch to $tree$ with label $\left(A = v_k\right)$ and subtree $subtree$\;
+  }
+  \Return{$tree$}
+\end{function}
+
+We selected four data sets from the Machine Learning Repository at \url{http://archive.ics.uci.edu/ml/datasets.php}. We then ran each through the \ref{algo:DecisionTreeLearning} algorithm with maximum depths ranging from 1 to 10 and performed $k$-fold cross-validation to determine error, with $k = 4$.
 
 \section{Results}
 
