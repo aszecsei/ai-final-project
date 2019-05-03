@@ -8,7 +8,7 @@ from sklearn import tree
 
 class Config:
     DELETE_MISSING = True
-    LEAVE_ONE_OUT = False
+    LEAVE_ONE_OUT = True
 
 
 class DataType(Enum):
@@ -91,17 +91,8 @@ def run_validation(data_type, model, depth=None):
 
 
 if __name__ == "__main__":
-    # print("--------- TIC-TAC-TOE: OURS ---------")
-    # run_validation(DataType.TTT, Model.OURS)
-    # print("-------- TIC-TAC-TOE: SCIKIT --------")
-    # run_validation(DataType.TTT, Model.SCIKIT)
-
-    # print("--------- MUSHROOMS: OURS ---------")
-    # run_validation(DataType.MUSHROOMS, Model.OURS)
-    # print("-------- MUSHROOMS: SCIKIT --------")
-    # run_validation(DataType.MUSHROOMS, Model.SCIKIT)
-
-    print("--------- BALANCE: OURS ---------")
-    run_validation(DataType.BALANCE, Model.OURS)
-    print("-------- BALANCE: SCIKIT --------")
-    run_validation(DataType.BALANCE, Model.SCIKIT)
+    dt = DataType.TTT
+    print("--------- OURS ---------")
+    run_validation(dt, Model.OURS)
+    print("-------- SCIKIT --------")
+    run_validation(dt, Model.SCIKIT)
