@@ -52,7 +52,28 @@ let suite =
         { attributes=["rain"; "mild"; "high"; "strong"]; value="no"; };
       |] in
       let result = decision_tree_learning examples [|outlook; temperature; humidity; wind;|] [| |] possible_classifications in
-      assert_equal (string_of_decision_tree result) (string_of_decision_tree ((`Leaf { result="yes" }) :> decision_tree))
+
+      let yes_leaf = `Leaf { result="yes" } in
+      let no_leaf = `Leaf { result="no" } in
+
+      let humidity_node = `Node { category="humidity"; category_index=2; children=[
+        { option="high"; child=no_leaf};
+        { option="normal"; child=yes_leaf};
+      ] } in
+
+      let wind_node = `Node { category="wind"; category_index=3; children=[
+        { option="strong"; child=no_leaf};
+        { option="weak"; child=yes_leaf};
+      ]} in
+
+      let outlook_node = `Node {category="outlook"; category_index=0; children=[
+        { option="sunny"; child=humidity_node};
+        { option="overcast"; child=yes_leaf};
+        { option="rain"; child=wind_node};
+      ]} in
+
+      print_endline (string_of_decision_tree result);
+      assert_equal (string_of_decision_tree result) (string_of_decision_tree (outlook_node :> decision_tree))
     );
   ]
 

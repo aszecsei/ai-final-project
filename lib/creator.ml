@@ -8,6 +8,7 @@ let count_occurrences value arr =
 
 (* Selects the most common element in the given array, breaking ties randomly. *)
 let plurality_value arr =
+  print_endline ("Plurality value array size " ^ (string_of_int (Array.length arr)));
   let max_value = Array.fold_left (fun a b ->
     let occur = count_occurrences b arr in
     if a > occur then a else occur) 0 arr in
@@ -46,22 +47,26 @@ let argmax examples attributes possible_classifications =
   Array.fold_left (fun agg value ->
     let e1 = (importance value examples possible_classifications) in
     match agg with
-    | Some(v2) when (importance v2 examples possible_classifications) < e1 -> agg
+    | Some(v2) when (importance v2 examples possible_classifications) > e1 -> agg (* since v2 (agg) has greater importance, select it *)
     | _ -> Some(value)
   ) None attributes
 
 let rec decision_tree_learning examples attributes parent_examples possible_classifications =
-  if Array.length examples = 0 then
+  if Array.length examples = 0 then (
+    print_endline "Examples are length 0";
     (`Leaf { result=(plurality_value parent_examples).value; } :> decision_tree)
-  else
+  ) else
     let first_val = (Array.get examples 0).value in
-    if (Array.for_all (fun value -> (value.value = first_val)) examples) then
+    if (Array.for_all (fun value -> (value.value = first_val)) examples) then (
+      print_endline "All examples have same classification";
       (`Leaf { result=first_val; }  :> decision_tree)
-    else if (Array.length attributes = 0) then
+    ) else if (Array.length attributes = 0) then (
+      print_endline "Attributes length 0";
       (`Leaf { result=(plurality_value examples).value; } :> decision_tree)
-    else
+    ) else
       match (argmax examples attributes possible_classifications) with
       | Some(a) -> (
+          print_endline ("New node for category " ^ a.name);
           let tree = `Node { category=a.name; category_index=a.index; children=[]; } in
           (Array.fold_left (fun agg value ->
             let new_examples = Array.of_list (List.filter (fun v -> (List.nth v.attributes a.index) = value) (Array.to_list examples)) in
@@ -69,4 +74,7 @@ let rec decision_tree_learning examples attributes parent_examples possible_clas
             add_child agg value subtree
           ) tree a.possible_values :> decision_tree)
         ) 
-      | _ -> (`Leaf { result=(plurality_value parent_examples).value; } :> decision_tree)
+      | _ -> (
+        print_endline "Something has gone wrong";
+        (`Leaf { result=(plurality_value parent_examples).value; } :> decision_tree)
+      )
