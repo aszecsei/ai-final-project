@@ -1,5 +1,6 @@
 open Decision_tree
 open Decision_tree_t
+open Types
 
 (* Counts the number of times the given value is present in arr *)
 let count_occurrences value arr =
@@ -14,8 +15,8 @@ let plurality_value arr =
   let n = Random.int (Array.length selected) in
   Array.get selected n
 
-type example = { attributes:string list; value:string; }
-type attribute = { name:string; possible_values:string array; index: int; }
+(*type example = { attributes:string list; value:string; }
+type attribute = { name:string; possible_values:string array; index: int; }*)
 
 let number_of_examples_with_value value examples =
   Array.fold_left (fun agg v -> if v.value = value then (succ agg) else agg) 0 examples
@@ -43,7 +44,7 @@ let importance attribute examples possible_values =
 
 let argmax examples attributes possible_classifications =
   Array.fold_left (fun agg value ->
-    let e1 = (importance value examples) in
+    let e1 = (importance value examples possible_classifications) in
     match agg with
     | Some(v2) when (importance v2 examples possible_classifications) < e1 -> agg
     | _ -> Some(value)

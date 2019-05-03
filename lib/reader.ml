@@ -1,5 +1,5 @@
-(*type example=Creator.example;*)
-type example={attributes:string list; value:string}
+open Types
+(*type example={attributes:string list; value:string}*)
 
 let example_to_str (ex:example) :string=
         let rec mk_attrs_str attrs first=
@@ -59,4 +59,4 @@ let read_gen (file:string) (cci:int) : example array=
                 close_in inf;
                 Array.of_list (List.rev !exs)
 ;;
-print_example_array (read_gen "test.txt" 0);;
+(*print_example_array (read_gen "test.txt" 0);;*)
