@@ -43,7 +43,7 @@ let importance attribute examples possible_values =
 
 let argmax examples attributes possible_classifications =
   Array.fold_left (fun agg value ->
-    let e1 = (importance value examples) in
+    let e1 = (importance value examples possible_classifications) in
     match agg with
     | Some(v2) when (importance v2 examples possible_classifications) < e1 -> agg
     | _ -> Some(value)
@@ -64,7 +64,7 @@ let rec decision_tree_learning examples attributes parent_examples possible_clas
           let tree = `Node { category=a.name; category_index=a.index; children=[]; } in
           (Array.fold_left (fun agg value ->
             let new_examples = Array.of_list (List.filter (fun v -> (List.nth v.attributes a.index) = value) (Array.to_list examples)) in
-            let subtree = decision_tree_learning new_examples (Array.of_list (List.filter (fun v -> v.index != a.index) (Array.to_list attributes))) examples in
+            let subtree = decision_tree_learning new_examples (Array.of_list (List.filter (fun v -> v.index != a.index) (Array.to_list attributes))) examples possible_classifications in
             add_child agg value subtree
           ) tree a.possible_values :> decision_tree)
         ) 
