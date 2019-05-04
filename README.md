@@ -10,6 +10,42 @@
 
 > TODO
 
+### DTL
+
+#### basic use
+
+to create the discision tree by running just the ocaml code, you run at the project root with the following:
+
+```dune exec ./bin/dtl.ml [data type flag] [path to input file]```
+
+`[data type flag]` can either be:
+  `balance` which refers to the data from [Balance Scale](http://archive.ics.uci.edu/ml/datasets/Balance+Scale)
+  `mushrooms` which refers to the data from [Mushroom](http://archive.ics.uci.edu/ml/datasets/Mushroom)
+  `tictactoe` which refers to the data from [Tic-Tac-Toe Endgame](http://archive.ics.uci.edu/ml/datasets/Tic-Tac-Toe+Endgame)
+  `car` which refers to the data from [Car Evaluation](http://archive.ics.uci.edu/ml/datasets/Car+Evaluation)
+  all of these are case insensitive.
+The contents of `[path to input file]` must match up with what is expected from `[data type flag]`
+
+#### additional to what is stated above there are 2 optional features. 
+
+#### readable tree
+
+use a readable version of the tree in a json format instead of a single line json you can do the following:
+
+```dune exec ./bin/dtl.ml [data type flag] [path to input file] -p```
+
+this will transform the single lined json into a prettyfied string that is human readable, before use.
+#### write tree to file
+
+to write the json tree to a file you can do the following:
+
+```dune exec ./bin/dtl.ml [data type flag] [path to input file] -w [file to be created/overwritten with tree]```
+
+#### to use pretty tree and write tree to file you do the following:
+
+```dune exec ./bin/dtl.ml [data type flag] [path to input file] -pw [file to be created/overwritten with tree]```
+
+the order of p and w do not actually matter (nor does the - infront)
 ## Roles
 
 - Coordinator: Diego
