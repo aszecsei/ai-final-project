@@ -1,30 +1,6 @@
 open Types
 (*type example={attributes:string list; value:string}*)
 
-let example_to_str (ex:example) :string=
-        let rec mk_attrs_str attrs first=
-                match attrs,first with
-                | _, true -> "["^(mk_attrs_str attrs false)
-                | [], _   -> "]"
-                | h::t, _ -> h^";"^(mk_attrs_str t false)
-        in
-        "{value: "^ex.value^"; attributes: "^(mk_attrs_str ex.attributes true)^"}"
-;;
-
-let print_example (ex:example) =
-        Printf.printf "%s" ((example_to_str ex)^"\n")
-;;
-
-let print_example_array (exs:example array) =
-        let len = (Array.length exs); in
-        let rec for_loop (i:int) =
-                if (i>=len) then () 
-                else (print_example (Array.get exs i);
-                     (for_loop (i+1)));
-        in
-        for_loop 0
-;;
-
 let create_example_from_list (l:string list) (cci:int) : example=
         let rec build_ex (l:string list) (ind:int) (attr:string list) : example=
                 match l, ind=cci with

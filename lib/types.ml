@@ -1,12 +1,59 @@
 type example={attributes:string list; value:string}
+let example_to_str (ex:example) :string=
+        let rec mk_attrs_str attrs first=
+                match attrs,first with
+                | _, true -> "["^(mk_attrs_str attrs false)
+                | [], _   -> "]"
+                | h::t, _ -> h^";"^(mk_attrs_str t false)
+        in
+        "{value: "^ex.value^"; attributes: "^(mk_attrs_str ex.attributes true)^"}"
+;;
+
+let print_example (ex:example) =
+        Printf.printf "%s\n" (example_to_str ex)
+;;
+
+let print_example_array (exs:example array) =
+        let len = (Array.length exs); in
+        let rec for_loop (i:int) =
+                if (i>=len) then ()
+                else (print_example (Array.get exs i);
+                     (for_loop (i+1)));
+        in
+        for_loop 0
+;;
+
 type attribute = { name:string; possible_values:string array; index: int; }
-type dataType = Balance | Mushrooms | TicTacToe | Unnamed
+let attribute_to_str (att:attribute) :string =
+        let rec pv_to_str (i:int) =
+                let first = if (i = 0) then "[|" else "" in
+                if (i >= Array.length att.possible_values) then "|]"
+                else first^(Array.get att.possible_values i)^"; "^(pv_to_str (i+1));
+        in
+        "{ name: "^att.name^"; possible_values: "^(pv_to_str 0)^"; value: "^(string_of_int att.index)^";}"
+;;
+
+let print_attribute (att:attribute) =
+        Printf.printf "%s\n" (attribute_to_str att)
+;;
+
+let print_attribute_array (atts:attribute array) =
+        let rec for_loop (i:int) =
+                if (i>=(Array.length atts)) then ()
+                else (print_attribute (Array.get atts i);
+                     (for_loop (i+1)));
+        in
+        for_loop 0
+;;
+
+type dataType = Balance | Mushrooms | TicTacToe | Car
 let getDataType (typ:string) : dataType =
         match (String.lowercase_ascii typ) with
-        | "balance" -> Balance
+        | "balance"   -> Balance
         | "mushrooms" -> Mushrooms
         | "tictactoe" -> TicTacToe
-        | _ -> failwith "not one of our data sets"
+        | "car"       -> Car
+        | _           -> failwith "not one of the types we have."
 ;;
 
 let getCCI (kind:dataType) :int =
@@ -14,20 +61,23 @@ let getCCI (kind:dataType) :int =
         | Balance   -> 0
         | Mushrooms -> 0
         | TicTacToe -> 9
-        | _         -> failwith "not one of our data sets"
+        | Car       -> 6
 ;;
 
 let getClassifications (kind:dataType) :string array =
         (*balance classification*)
-        let balance_classes = [|"L"; "B"; "R"|] in
+        let balance_classes   = [|"L"; "B"; "R"|] in
         (*mushrooms classification*)
         let mushrooms_classes = [|"e";"p"|] in
         (*tictactoe classification*)
-        let ttt_classification = [|"positive";"negative"|]
+        let ttt_classes       = [|"positive";"negative"|] in
+        (*cars classification*)
+        let car_classes       = [|"unacc";"acc";"good";"vgood"|] in
         match kind with
         | Balance   -> balance_classes
         | Mushrooms -> mushrooms_classes
-        | _         -> failwith "not one of our data sets"
+        | TicTacToe -> ttt_classes
+        | Car       -> car_classes
 
 let getAttributes (kind:dataType) =
         (*balance attributes *)
@@ -69,7 +119,7 @@ let getAttributes (kind:dataType) =
                                     index = 7;
                                   } in
         let gillColor           = { name = "gill-color";
-                                    possible_values = [|"k";"n";"b";"h";"g";"r";"o";"p";"u";"e";"w";"y"|]
+                                    possible_values = [|"k";"n";"b";"h";"g";"r";"o";"p";"u";"e";"w";"y"|];
                                     index = 8;
                                   } in
         let stalkShape          = { name = "stalk-shape";
@@ -109,7 +159,7 @@ let getAttributes (kind:dataType) =
                                     index = 17;
                                   } in
         let ringType            = { name = "ring-type";
-                                    possible_values = [|"c";"e";"f";"l";"n";"p";"s";"z"|]
+                                    possible_values = [|"c";"e";"f";"l";"n";"p";"s";"z"|];
                                     index = 18;
                                   } in
         let sporePrintColor     = { name = "spore-print-color";
@@ -125,9 +175,23 @@ let getAttributes (kind:dataType) =
                                     index = 21
                                   } in
         (*tictactoe attributes*)
-        let call1 = { name = "cell[1,1]"; possible_values = [|"x";"o";"b"|]; index = 0;} in
-        let call2 = { name = "cell[2,1]"; possible_values = [|"x";"o";"b"|]; index = 1;} in
-        let call1 = { name = "cell[3,1]"; possible_values = [|"x";"o";"b"|]; index = 2;} in
+        let cell1 = { name = "cell[1,1]"; possible_values = [|"x";"o";"b"|]; index = 0;} in
+        let cell2 = { name = "cell[2,1]"; possible_values = [|"x";"o";"b"|]; index = 1;} in
+        let cell3 = { name = "cell[3,1]"; possible_values = [|"x";"o";"b"|]; index = 2;} in
+        let cell4 = { name = "cell[1,2]"; possible_values = [|"x";"o";"b"|]; index = 3;} in
+        let cell5 = { name = "cell[2,2]"; possible_values = [|"x";"o";"b"|]; index = 4;} in
+        let cell6 = { name = "cell[3,2]"; possible_values = [|"x";"o";"b"|]; index = 5;} in
+        let cell7 = { name = "cell[1,3]"; possible_values = [|"x";"o";"b"|]; index = 6;} in
+        let cell8 = { name = "cell[2,3]"; possible_values = [|"x";"o";"b"|]; index = 7;} in
+        let cell9 = { name = "cell[3,3]"; possible_values = [|"x";"o";"b"|]; index = 8;} in
+        (*car attributes*)
+        let buying   = { name = "buying";   possible_values = [|"vhigh";"high";"med";"low"|]; index = 0} in
+        let maint    = { name = "maint";    possible_values = [|"vhigh";"high";"med";"low"|]; index = 1} in
+        let doors    = { name = "doors";    possible_values = [|"2";"3";"4";"5more"|];        index = 2} in
+        let persons  = { name = "persons";  possible_values = [|"2";"4";"more"|];             index = 3} in
+        let lug_boot = { name = "lug_boot"; possible_values = [|"small";"med";"big"|];        index = 4} in
+        let safety   = { name = "safety";   possible_values = [|"low";"med";"high"|];         index = 5} in
+
         match kind with
         | Balance   -> [| leftWeight; leftDist; rightWeight; rightDist;|]
         | Mushrooms -> [| capShape; capSurface; capColor; bruises; odor;
@@ -136,23 +200,6 @@ let getAttributes (kind:dataType) =
                           stalkSurfBelowRing; stalkColorAboveRing;
                           stalkColorBelowRing; veilType; veildColor; ringNumber;
                           ringType; sporePrintColor; population; habitat;|]
-        | _         -> failwith "not one of our data sets"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        | TicTacToe -> [| cell1; cell2; cell3; cell4; cell5; cell6; cell7; cell8; cell9|]
+        | Car       -> [| buying; maint; doors; persons; lug_boot; safety|]
+;;
