@@ -15,7 +15,7 @@ let () =
                 let classes    = getClassifications kind in 
                 let examples   = read_gen Sys.argv.(2) cci in
                 let attributes = getAttributes kind in
-                let temp cls = 
+                let temp cls =(*this is for debug purposes*) 
                         let rec for_loop (i:int) =
                                 if (i>=(Array.length cls)) then ()
                                 else (Printf.printf "%s; " (Array.get cls i);
@@ -25,9 +25,9 @@ let () =
                         Printf.printf "\n";
                 in
                 let tree = decision_tree_learning examples attributes [||] classes in
-                print_example_array (Array.sub examples 0 10);
-                print_attribute_array attributes;
-                temp classes;
+                print_example_array (Array.sub examples 0 10); (*FOR DEBUG PURPOSES*)
+                print_attribute_array attributes; (*FOR DEBUG PURPOSES*)
+                temp classes; (*FOR DEBUG PURPOSES*)
                 Printf.printf "%s\n" (string_of_decision_tree tree) 
              )
 ;;
