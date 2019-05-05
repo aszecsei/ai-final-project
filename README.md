@@ -14,7 +14,7 @@
 
 #### basic use
 
-to create the discision tree by running just the ocaml code, you run at the project root with the following:
+to create the discision tree in single line json format by running just the ocaml code, you run at the project root with the following:
 
 ```dune exec ./bin/dtl.ml [data type flag] [path to input file]```
 
