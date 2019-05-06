@@ -2,7 +2,7 @@ open Lib.Decision_tree_j
 open Lib.Types
 open Lib.Reader
 
-let () = if Array.length Sys.argv < 3 
+let () = if Array.length Sys.argv <> 3 
     then failwith "Wrong parameters"
 
 let file = Sys.argv.(1) (* path to decision tree *)
