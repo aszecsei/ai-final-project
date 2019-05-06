@@ -1,5 +1,6 @@
-open Lib.Creator
 open Lib.Decision_tree_j
+open Lib.Types
+open Lib.Reader
 
 let () = if Array.length Sys.argv < 3 
     then failwith "Wrong parameters"
@@ -30,8 +31,8 @@ let rec get_nth l n =
 
 let decisionTree = decision_tree_of_string file_contents ;;
 
-(* TODO: get parsed dataset using reader/parser *)
-let examples = [|{ attributes = ["1"; "1"; "1"; "2"]; value = "R"; }|]
+(* get parsed dataset using reader/parser *)
+let examples = read_gen dataset 1000
 
 let rec classify dt (ex: example) = 
   match dt with 
@@ -49,5 +50,6 @@ let rec classify dt (ex: example) =
 (* print dt's classification for each example *)
 let () =
     for i = 0 to Array.length examples - 1 do
-      print_endline (classify decisionTree examples.(i))
+      (* List.iter (fun x -> Printf.printf "%s " x) examples.(i).attributes; *)
+      print_endline (classify decisionTree examples.(i));
     done;;
