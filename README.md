@@ -20,6 +20,8 @@ pip3 install pandas sklearn
 
 ### Python Script
 
+The Python script expects that the two OCaml programs (`dtl` and `classify`) have already been built with the names `dtl.exe` and `classify.exe`, and that the two executables are located in the folder `./_build/default/bin/`. If this is not the case, Python will throw an error.
+
 To run the Python script, run the following at the project root:
 
 ```bash
