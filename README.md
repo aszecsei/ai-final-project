@@ -77,6 +77,8 @@ dune exec ./bin/dtl.exe [data type flag] [path to input file] pw [file to be cre
 
 the order of p and w does not actually matter
 
+### Classifier
+
 ## Roles
 
 - Coordinator: Diego
