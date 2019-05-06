@@ -2,13 +2,14 @@ import pandas as pd
 from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score
 from enum import Enum
-
+import subprocess
 from sklearn import tree
+import os
 
 
 class Config:
     DELETE_MISSING = True
-    LEAVE_ONE_OUT = True
+    LEAVE_ONE_OUT = False
 
 
 class DataType(Enum):
@@ -24,15 +25,56 @@ class Model(Enum):
     SCIKIT = 2
 
 
-def classify_data(decision_tree, data_points):
-    res = []
-    for index, row in data_points.iterrows():
-        res.append("positive")
-    return res
+def classify_data(data_points):
+    # Write test data to file
+    data_points.to_csv('./temp/test.csv', header=False, index=False)
+    result = subprocess.run(
+        ['./_build/default/bin/classify.exe', './temp/decision.json', './temp/test.csv'], stdout=subprocess.PIPE)
+    result_str = result.stdout.decode('utf-8')
+    result_str_l = result_str.split()
+    return result_str_l
 
 
-def get_decision_tree(X_train, y_train):
-    return None
+def get_type_flag(data_type):
+    if data_type == DataType.BALANCE:
+        return "BALANCE"
+    elif data_type == DataType.CAR_EVALUATION:
+        return "CAR"
+    elif data_type == DataType.MUSHROOMS:
+        return "MUSHROOMS"
+    elif data_type == DataType.TTT:
+        return "TICTACTOE"
+
+
+def get_decision_tree(X_train, y_train, data_type):
+    # Write training data to file
+    training_data = X_train.copy()
+    if data_type == DataType.BALANCE or data_type == DataType.MUSHROOMS:
+        # These two data sets have the class at the first column
+        training_data.insert(0, 'class', y_train)
+    else:
+        # These two data sets have the class at the last column
+        training_data.insert(X_train.shape[1], 'class', y_train)
+
+    if not os.path.exists('./temp'):
+        os.mkdir('./temp')
+    training_data.to_csv('./temp/training.csv', header=False, index=False)
+
+    data_type_flag = get_type_flag(data_type)
+    result = subprocess.run(
+        ['./_build/default/bin/dtl.exe', data_type_flag, './temp/training.csv'], stdout=subprocess.PIPE)
+    # print(result.stdout)
+
+    # Write the JSON decision tree to a file
+    json = open("./temp/decision.json", "w")
+    json.write(result.stdout.decode("utf-8"))
+    json.close()
+
+
+def clean():
+    # Delete all temp files
+    os.remove('./temp/training.csv')
+    os.rmdir('./temp')
 
 
 def run_validation(data_type, model, depth=None):
@@ -54,7 +96,9 @@ def run_validation(data_type, model, depth=None):
         data = pd.read_csv("./data/ttt/tic-tac-toe.data", names=[
                            'topleft', 'topmid', 'topright', 'midleft', 'midmid', 'midright', 'bottomleft', 'bottommid', 'bottomright', 'class'])
     elif data_type == DataType.CAR_EVALUATION:
-        print("TODO")
+        data = pd.read_csv("./data/cars/car.data", names=[
+            'price_buying', 'price_maint', 'tech_comfort_doors', 'tech_comfort_persons', 'tech_comfort_lugboot', 'tech_safety', 'class'
+        ])
 
     X = data.drop('class', axis=1)
     y = data[['class']]
@@ -77,8 +121,8 @@ def run_validation(data_type, model, depth=None):
         X_test, y_test = X.loc[test, :], y.loc[test, :]
 
         if model == Model.OURS:
-            dt = get_decision_tree(X_train, y_train)
-            y_pred = classify_data(dt, X_test)
+            get_decision_tree(X_train, y_train, data_type)
+            y_pred = classify_data(X_test)
         elif model == Model.SCIKIT:
             dt = tree.DecisionTreeClassifier(criterion="entropy")
             dt.fit(X_train, y_train)
@@ -91,8 +135,10 @@ def run_validation(data_type, model, depth=None):
 
 
 if __name__ == "__main__":
-    dt = DataType.TTT
+    dt = DataType.MUSHROOMS
     print("--------- OURS ---------")
     run_validation(dt, Model.OURS)
     print("-------- SCIKIT --------")
     run_validation(dt, Model.SCIKIT)
+
+    # clean()

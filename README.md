@@ -4,50 +4,79 @@
 
 ## Setup
 
-> TODO
+### OCaml
+
+OPAM version 2 is required, alongside a dune version greater than 1.6.
+
+### Python
+
+We use Python 3 and packages `pandas` and `scikit-learn`.
+
+```bash
+pip3 install pandas sklearn
+```
 
 ## How To Run
 
-> TODO
+### Python Script
+
+To run the Python script, run the following at the project root:
+
+```bash
+python3 -u ./scripts/experiment.py
+```
+
+This will run k-fold cross-validation on both our decision tree algorithm and the decision tree algorithm provided by scikit-learn. It prints the # of data points, the # of attributes, and the accuracy and error rate using k-fold cross-validation.
+
+![An example run with no depth constraints on the mushrooms data set](https://i.imgur.com/aBzk3SR.png)
 
 ### DTL
 
-#### basic use
+#### Basic Use
 
-to create the discision tree in single line json format by running just the ocaml code, you run at the project root with the following:
+To create the decision tree in single line json format, you run at the project root with the following:
 
-```dune exec ./bin/dtl.exe [data type flag] [path to input file]```
+```bash
+dune exec ./bin/dtl.exe [FLAG] [path to input file] [OPTIONS]
+```
 
-`[data type flag]` can either be:
+`[FLAG]` can either be:
+
 - `balance` which refers to the data from [Balance Scale](http://archive.ics.uci.edu/ml/datasets/Balance+Scale).
 - `mushrooms` which refers to the data from [Mushroom](http://archive.ics.uci.edu/ml/datasets/Mushroom).
-- `tictactoe` which refers to the data from [Tic-Tac-Toe Endgame](http://archive.ics.uci.edu/ml/datasets/Tic-Tac-Toe+Endgame). 
+- `tictactoe` which refers to the data from [Tic-Tac-Toe Endgame](http://archive.ics.uci.edu/ml/datasets/Tic-Tac-Toe+Endgame).
 - `car` which refers to the data from [Car Evaluation](http://archive.ics.uci.edu/ml/datasets/Car+Evaluation).
 
-all of these are case insensitive.
+All of these are case insensitive.
 
-The contents of `[path to input file]` must match up with what is expected from `[data type flag]`
-
-##### Additional to what is stated above there are 2 optional features. 
+The contents of `[path to input file]` must match up with what is expected from `[FLAG]`
 
 #### Readable tree
 
-use a readable version of the tree in a json format instead of a single line json you can do the following:
+To print a readable version of the tree in JSON format instead of a single line JSON string you use the `p` option:
 
-```dune exec ./bin/dtl.exe [data type flag] [path to input file] p```
+```bash
+dune exec ./bin/dtl.exe [FLAG] [path to input file] p
+```
 
-this will transform the single lined json into a prettyfied string that is human readable, before use.
+This will display a prettified JSON string that is human readable.
+
 #### Write tree to file
 
-to write the json tree to a file you can do the following:
+To write the JSON tree to a file you can do the following:
 
-```dune exec ./bin/dtl.exe [data type flag] [path to input file] w [file to be created/overwritten with tree]```
+```bash
+dune exec ./bin/dtl.exe [data type flag] [path to input file] w [file to be created/overwritten with tree]
+```
 
 #### To use pretty tree and write tree to file you do the following:
 
-```dune exec ./bin/dtl.exe [data type flag] [path to input file] pw [file to be created/overwritten with tree]```
+```bash
+dune exec ./bin/dtl.exe [data type flag] [path to input file] pw [file to be created/overwritten with tree]
+```
 
 the order of p and w does not actually matter
+
 ## Roles
 
 - Coordinator: Diego
