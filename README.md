@@ -34,10 +34,16 @@ This will run k-fold cross-validation on both our decision tree algorithm and th
 
 #### Basic Use
 
+For a complete help manual, run:
+
+```bash
+dune exec ./bin/dtl.exe -- --help
+```
+
 To create the decision tree in single line json format, you run at the project root with the following:
 
 ```bash
-dune exec ./bin/dtl.exe [FLAG] [path to input file] [OPTIONS]
+dune exec ./bin/dtl.exe -- [FLAG] [path to input file]
 ```
 
 `[FLAG]` can either be:
@@ -51,31 +57,37 @@ All of these are case insensitive.
 
 The contents of `[path to input file]` must match up with what is expected from `[FLAG]`
 
-#### Readable tree
+#### Options
 
-To print a readable version of the tree in JSON format instead of a single line JSON string you use the `p` option:
+The order in which the following options appears does not matter, although their case does.
 
 ```bash
-dune exec ./bin/dtl.exe [FLAG] [path to input file] p
+dune exec ./bin/dtl.exe -- [OPTIONS]... [FLAG] [path to input file]
 ```
 
-This will display a prettified JSON string that is human readable.
+##### Readable tree
 
-#### Write tree to file
+To print a readable version of the tree in JSON format instead of a single line JSON string you use the `-p` or `--pretty` option:
+
+```bash
+dune exec ./bin/dtl.exe -- -p [FLAG] [path to input file]
+dune exec ./bin/dtl.exe -- --pretty [FLAG] [path to input file]
+```
+
+##### Write tree to file
 
 To write the JSON tree to a file you can do the following:
 
 ```bash
-dune exec ./bin/dtl.exe [data type flag] [path to input file] w [file to be created/overwritten with tree]
+dune exec ./bin/dtl.exe -- -w [PATH] [FLAG] [path to input file]
+dune exec ./bin/dtl.exe -- --dest=[PATH] [FLAG] [path to input file]
 ```
 
-#### To use pretty tree and write tree to file you do the following:
+##### Combining Options:
 
 ```bash
-dune exec ./bin/dtl.exe [data type flag] [path to input file] pw [file to be created/overwritten with tree]
+dune exec ./bin/dtl.exe -- -w [PATH] -p [FLAG] [path to input file]
 ```
-
-the order of p and w does not actually matter
 
 ## Roles
 

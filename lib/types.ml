@@ -47,6 +47,10 @@ let print_attribute_array (atts:attribute array) =
 ;;
 
 type dataType = Balance | Mushrooms | TicTacToe | Car
+
+let str = Printf.sprintf
+let kind_str = function Balance -> "balance" | Mushrooms -> "mushrooms" | TicTacToe -> "tictactoe" | Car -> "car"
+
 let getDataType (typ:string) : dataType =
         match (String.lowercase_ascii typ) with
         | "balance"   -> Balance
@@ -202,4 +206,3 @@ let getAttributes (kind:dataType) =
                           ringType; sporePrintColor; population; habitat;|]
         | TicTacToe -> [| cell1; cell2; cell3; cell4; cell5; cell6; cell7; cell8; cell9|]
         | Car       -> [| buying; maint; doors; persons; lug_boot; safety|]
-;;
