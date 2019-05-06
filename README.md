@@ -89,6 +89,8 @@ dune exec ./bin/dtl.exe -- --dest=[PATH] [FLAG] [path to input file]
 dune exec ./bin/dtl.exe -- -w [PATH] -p [FLAG] [path to input file]
 ```
 
+### Classifier
+
 ## Roles
 
 - Coordinator: Diego
