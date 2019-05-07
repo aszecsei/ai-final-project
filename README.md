@@ -8,6 +8,12 @@
 
 OPAM version 2 is required, alongside a dune version greater than 1.6.
 
+To install required dependencies:
+
+```bash
+opam install adtgen yojson cmdliner
+```
+
 ### Python
 
 We use Python 3 and packages `pandas` and `scikit-learn`.
