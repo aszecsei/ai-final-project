@@ -6,13 +6,18 @@ open Yojson.Safe
 open Cmdliner
 
 
-let dtl kind examples write_to should_pretty_print _max_depth _should_prune =
-        let kind = getDataType kind in
+let dtl _kind _examples write_to should_pretty_print _max_depth _should_prune =
+        let kind = getDataType _kind in
         let cci = getCCI kind in
         let classes = getClassifications kind in
-        let examples = read_gen examples cci in
+        let examples = read_gen _examples cci in
         let attributes = getAttributes kind in
-        let tree = decision_tree_learning examples attributes [||] classes in
+        let max_depth =
+                match _max_depth with
+                | Some(_max_depth) -> _max_depth
+                | _                -> Array.length attributes (*no depth limit as no tree can go deeper than number of attributes*)
+        in
+        let tree = decision_tree_learning examples attributes [||] classes max_depth in
         let tree_str = if should_pretty_print then
                 (pretty_to_string (from_string (string_of_decision_tree tree))) 
         else 
@@ -36,7 +41,7 @@ let examples =
 
 let write_to =
         let doc = "An optional file to write the JSON output." in
-        Arg.(value & opt (some file) None & info ["w"; "dest"] ~docv:"DEST" ~doc)
+        Arg.(value & opt (some string) None & info ["w"; "dest"] ~docv:"DEST" ~doc)
 
 let should_pretty_print =
         let doc = "Output a human-readable JSON file." in

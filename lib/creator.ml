@@ -55,9 +55,11 @@ let argmax examples attributes possible_classifications =
     | _ -> Some(value)
   ) None attributes
 
-let rec decision_tree_learning examples attributes parent_examples possible_classifications =
+let rec decision_tree_learning examples attributes parent_examples possible_classifications depth =
   if Array.length examples = 0 then (
     (`Leaf { result=(plurality_value parent_examples).value; } :> decision_tree)
+  ) else if depth=0 then (
+    (`Leaf { result=(plurality_value examples).value; } :> decision_tree)    
   ) else
     let first_val = (Array.get examples 0).value in
     if (Array.for_all (fun value -> (value.value = first_val)) examples) then (
@@ -70,7 +72,7 @@ let rec decision_tree_learning examples attributes parent_examples possible_clas
           let tree = `Node { category=a.name; category_index=a.index; children=[]; } in
           (Array.fold_left (fun agg value ->
             let new_examples = Array.of_list (List.filter (fun v -> (List.nth v.attributes a.index) = value) (Array.to_list examples)) in
-            let subtree = decision_tree_learning new_examples (Array.of_list (List.filter (fun v -> v.index != a.index) (Array.to_list attributes))) examples possible_classifications in
+            let subtree = decision_tree_learning new_examples (Array.of_list (List.filter (fun v -> v.index != a.index) (Array.to_list attributes))) examples possible_classifications (depth-1) in
             add_child agg value subtree
           ) tree a.possible_values :> decision_tree)
         ) 
