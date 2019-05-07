@@ -36,7 +36,7 @@ let examples =
 
 let write_to =
         let doc = "An optional file to write the JSON output." in
-        Arg.(value & opt (some file) None & info ["w"; "dest"] ~docv:"DEST" ~doc)
+        Arg.(value & opt (some string) None & info ["w"; "dest"] ~docv:"DEST" ~doc)
 
 let should_pretty_print =
         let doc = "Output a human-readable JSON file." in
