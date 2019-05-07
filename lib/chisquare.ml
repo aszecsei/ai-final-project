@@ -32,4 +32,4 @@ let delta (pis:int array) (nis:int array) : float =
         in
         sumdelta 0
 ;;
-Printf.printf "%f\n" (delta [|2;3;5|] [|3;6;1|])
+(*Printf.printf "%f\n" (delta [|2;3;5|] [|3;6;1|])*)
