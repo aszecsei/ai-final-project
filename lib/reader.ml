@@ -34,4 +34,4 @@ let read_gen (file:string) (cci:int) : example array=
                 close_in inf;
                 Array.of_list (List.rev !exs)
 ;;
-(*print_example_array (read_gen "test.txt" 10);;*)
+(*print_example_array (read_gen "test.data" 6);;*)

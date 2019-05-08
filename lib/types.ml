@@ -15,12 +15,9 @@ let print_example (ex:example) =
 
 let print_example_array (exs:example array) =
         let len = (Array.length exs); in
-        let rec for_loop (i:int) =
-                if (i>=len) then ()
-                else (print_example (Array.get exs i);
-                     (for_loop (i+1)));
-        in
-        for_loop 0
+        for i=0 to len-1 do
+                print_example (Array.get exs i);
+        done
 ;;
 
 type attribute = { name:string; possible_values:string array; index: int; }

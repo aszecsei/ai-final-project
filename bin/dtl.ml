@@ -14,8 +14,8 @@ let dtl _kind _examples write_to should_pretty_print _max_depth _should_prune =
         let attributes = getAttributes kind in
         let max_depth =
                 match _max_depth with
-                | Some(_max_depth) -> _max_depth
-                | _                -> Array.length attributes (*no depth limit as no tree can go deeper than number of attributes*)
+                | Some(_max_dep) -> _max_dep
+                | _              -> Array.length attributes (*no depth limit as no tree can go deeper than number of attributes*)
         in
         let tree = decision_tree_learning examples attributes [||] classes max_depth in
         let tree_str = if should_pretty_print then
