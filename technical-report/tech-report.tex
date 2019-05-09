@@ -71,6 +71,12 @@ The amount of pruning which occurs is heavily dependent on the data set chosen. 
 
 \section{Methods}
 
+\subsection{Role Assignment}
+
+% TODO: Talk about role assignment
+
+\subsection{Dataset Selection}
+
 Our first step was selecting datasets to use as the foundation for our programs. We used four UCI data sets \cite{Dua:2019}:
 
 \begin{enumerate}
@@ -79,6 +85,10 @@ Our first step was selecting datasets to use as the foundation for our programs.
   \item \texttt{CARS}, a dataset of car evaluations
   \item \texttt{TICTACTOE}, a dataset of Tic-Tac-Toe board states.
 \end{enumerate}
+
+These datasets were selected as they have a variety of both number of attributes and number of examples. \texttt{MUSHROOMS} has 8124 examples with 22 attributes, for example, while \texttt{BALANCE} only has 625 examples and 5 attributes. This variety ensured that our algorithm testing would not be skewed by certain kinds of datasets.
+
+\subsection{Decision Tree Generation}
 
 The foundation of our decision tree algorithm was the one provided by Russell and Norvig \cite{russell_norvig_2010} which, in turn, is based on the ID3 algorithm \cite{Quinlan1986}.
 
@@ -104,7 +114,11 @@ The foundation of our decision tree algorithm was the one provided by Russell an
 
 A two-program approach was used: first, a decision tree generator was developed, called \texttt{dtl}. This program would take in a flag to determine which of our data sets was represented by the input. As the ordering of attributes and classes was inconsistent between datasets, this allowed us to significantly simplify the process of importing data.
 
+\subsection{Classification}
+
 A second program, \texttt{classify}, was used to classify data using a decision tree generated from \texttt{dtl}. To communicate a decision tree between these two programs, a JSON representation of the decision tree was used. This data format allowed us to produce human-readable representations of the decision trees, which we could use as a sanity check during development.
+
+\subsection{$k$-fold Cross-Validation}
 
 Finally, we used Python to generate data for $k$-fold cross-validation for both our decision tree program as well as the decision tree algorithm provided by scikit-learn \cite{scikit-learn}. This provided a simple baseline for our experimentation.
 
