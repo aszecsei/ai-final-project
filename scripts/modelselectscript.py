@@ -5,19 +5,19 @@ import graphmaker
 filename= "output/ModelSelection.csv"
 subprocess.run(["rm","-f",filename])
 
-for i in range(1,2):
+for i in range(1,101):
     print("running car "+str(i))
     subprocess.run(["dune", "exec", "bin/modelSelect.exe", "--", "-q", "-g", filename, "CAR", "data/cars/car.data"])
 
-for i in range(1,1):
+for i in range(1,101):
     print("running mushrooms "+str(i))
     subprocess.run(["dune", "exec", "bin/modelSelect.exe", "--", "-q", "-g", filename, "MUSHROOMS", "data/mushrooms/agaricus-lepiota.data"])
 
-for i in range(1,2):
+for i in range(1,101):
     print("running tictoctoe "+str(i))
     subprocess.run(["dune", "exec", "bin/modelSelect.exe", "--", "-q", "-g", filename, "TICTACTOE", "data/ttt/tic-tac-toe.data"])
 
-for i in range(1,2):
+for i in range(1,101):
     print("running balance "+str(i))
     subprocess.run(["dune", "exec", "bin/modelSelect.exe", "--", "-q", "-g", filename, "BALANCE", "data/balance/balance-scale.data"])
 
