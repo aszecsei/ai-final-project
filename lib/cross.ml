@@ -62,9 +62,9 @@ let model_selection_cross_validation (kind:dataType) (k:int) (top_depth:int) (ex
         let errT      = ref [|1000.0|] in (*not a real thing at indicy 0*)
         let errV      = ref [|1000.0|] in (*not a real thing at indicy 0*)
         let depth     = ref 1 in
-        let break     = ref false in
+        (*let break     = ref false in*)
         let bestDepth = ref 1 in
-        while (not !break)&&(!depth)<=top_depth do
+        while (*(not !break)&&*)(!depth)<=top_depth do
                 let temp_errT, temp_errV = cross_validation !depth k examples attributes classes in
                 errT:=Array.append !errT [|temp_errT|];
                 errV:=Array.append !errV [|temp_errV|];
