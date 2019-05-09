@@ -3,16 +3,20 @@ start= "output/carSelection"
 end= ".csv"
 for i in range(1,6):
     filename=start+str(i)+end
-    subprocess.run(["dune", "exec", "bin/modelSelect.exe", "--", "-W", filename, "car", "data/cars/car.data"])
+    print("running car "+start+str(i))
+    subprocess.run(["dune", "exec", "bin/modelSelect.exe", "--", "-q", "-W", filename, "car", "data/cars/car.data"])
 start= "output/mushroomSelection"
 for i in range(1,6):
     filename=start+str(i)+end
-    subprocess.run(["dune", "exec", "bin/modelSelect.exe", "--", "-W", filename, "mushrooms", "data/mushrooms/agaricus-lepiota.data"])
+    print("running mushrooms "+start+str(i))
+    subprocess.run(["dune", "exec", "bin/modelSelect.exe", "--", "-q", "-W", filename, "mushrooms", "data/mushrooms/agaricus-lepiota.data"])
 start= "output/tttSelection"
 for i in range(1,6):
     filename=start+str(i)+end
-    subprocess.run(["dune", "exec", "bin/modelSelect.exe", "--", "-W", filename, "tictoctoe", "data/ttt/tic-tac-toe.data"])
+    print("running tictoctoe "+start+str(i))
+    subprocess.run(["dune", "exec", "bin/modelSelect.exe", "--", "-q", "-W", filename, "tictactoe", "data/ttt/tic-tac-toe.data"])
 start= "output/balanceSelection"
 for i in range(1,6):
     filename=start+str(i)+end
-    subprocess.run(["dune", "exec", "bin/modelSelect.exe", "--", "-W", filename, "balance", "data/balance/balance-scale.data"])
+    print("running balance "+start+str(i))
+    subprocess.run(["dune", "exec", "bin/modelSelect.exe", "--", "-q", "-W", filename, "balance", "data/balance/balance-scale.data"])

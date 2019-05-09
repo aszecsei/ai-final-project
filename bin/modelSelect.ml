@@ -5,7 +5,7 @@ open Yojson.Safe
 open Lib.Decision_tree_j
 open Cmdliner
 
-let model_select _kind _examples _k write_tree_to write_stat_to should_pretty_print _max_depth =
+let model_select _kind _examples _k write_tree_to write_stat_to should_pretty_print _max_depth quiet =
         let kind = getDataType _kind in
         let cci = getCCI kind in
         let max_depth =
@@ -44,10 +44,12 @@ let model_select _kind _examples _k write_tree_to write_stat_to should_pretty_pr
         in
         let errTstr = arr_to_csv errT in
         let errVstr = arr_to_csv errV in
-        Printf.printf "%s\n\n" tree_str;
-        Printf.printf "Best Depth: %d\n" bestDepth;
-        Printf.printf "errT: %s\n" errTstr;
-        Printf.printf "errV: %s\n" errVstr;
+        if not quiet then (
+                Printf.printf "%s\n\n" tree_str;
+                Printf.printf "Best Depth: %d\n" bestDepth;
+                Printf.printf "errT: %s\n" errTstr;
+                Printf.printf "errV: %s\n" errVstr;
+        );
         let _ =
                 match write_tree_to with
                 | Some(out_path) -> (
@@ -96,7 +98,11 @@ let max_depth =
         let doc = "An optional maximum depth. (defualt is 10)" in
         Arg.(value & opt (some int) None & info ["d"; "depth"] ~docv:"DEPTH" ~doc)
 
-let model_select_t = Term.(const model_select $ kind $ examples $ kValue $ write_tree_to $ write_stat_to $ should_pretty_print $ max_depth)
+let supress =
+        let doc = "flag to supress std output" in
+        Arg.(value & flag & info ["q"; "quiet"] ~doc)
+
+let model_select_t = Term.(const model_select $ kind $ examples $ kValue $ write_tree_to $ write_stat_to $ should_pretty_print $ max_depth $ supress)
 
 let info =
         let doc = "does model selection with DTL with max depth" in
