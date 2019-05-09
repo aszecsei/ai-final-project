@@ -114,6 +114,12 @@ A two-program approach was used: first, a decision tree generator was developed,
 
 A second program, \texttt{classify}, was used to classify data using a decision tree generated from \texttt{dtl}. To communicate a decision tree between these two programs, a JSON representation of the decision tree was used. This data format allowed us to produce human-readable representations of the decision trees, which we could use as a sanity check during development.
 
+\subsection{External Packages}
+
+To assist with the command-line interface, we used the \texttt{cmdliner} module. This allowed us to define data types and arguments for input, and then it handled the majority of the command-line parsing. It also automatically generated a \texttt{--help} option to inform users of what the different options were. This massively simplified developing optional new features.
+
+Additionally, we used \texttt{adtgen} to generate a JSON serializer and deserializer. This was done at the very start of the project, allowing us to work with and visualize decision tree data from the very beginning. This also meant that as our decision tree model was updated and changed, the JSON code was automatically shared and kept up-to-date between \texttt{dtl} and \texttt{classify}.
+
 \subsection{$k$-fold Cross-Validation}
 
 Finally, we used Python to generate data for $k$-fold cross-validation for both our decision tree program as well as the decision tree algorithm provided by scikit-learn \cite{scikit-learn}. This provided a simple baseline for our experimentation.
@@ -127,14 +133,14 @@ The results of our experimentation varied quite a bit between datasets. For \tex
 \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{figures/chart_ours_v_scikit_variance_mushrooms.pdf}
-  \caption{Error for our algorithm versus scikit-learn on the \texttt{MUSHROOMS} dataset}
+  \caption{Error ($\pm 2 \times \sigma$) for our algorithm versus scikit-learn on the \texttt{MUSHROOMS} dataset}
   \label{fig:mushoursvscikit}
 \end{figure}
 
 \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{figures/chart_ours_v_scikit_variance_tictactoe.pdf}
-  \caption{Error for our algorithm versus scikit-learn on the \texttt{TICTACTOE} dataset}
+  \caption{Error ($\pm 2 \times \sigma$) for our algorithm versus scikit-learn on the \texttt{TICTACTOE} dataset}
   \label{fig:tttoursvscikit}
 \end{figure}
 
@@ -143,9 +149,11 @@ The \texttt{CARS} dataset proved the most interesting. While our algorithm had w
 \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{figures/chart_ours_v_scikit_variance_car.pdf}
-  \caption{Error for our algorithm versus scikit-learn on the \texttt{CARS} dataset}
+  \caption{Error ($\pm 2 \times \sigma$) for our algorithm versus scikit-learn on the \texttt{CARS} dataset}
   \label{fig:caroursvscikit}
 \end{figure}
+
+Overall, we found that our algorithm performed much worse on datasets with a large amount of interconnected data, such as Tic-Tac-Toe, where the impact of one attribute was heavily dependent on all of the other attributes. However, for more traditional classification problems, such as evaluating cars or mushrooms, our algorithm was very accurate.
 
 \section{Discussion}
 
@@ -180,28 +188,28 @@ This work was supported in part by the University of Iowa.
 
 \section{Supplemental Graphs \& Data}
 
-\begin{figure}
+\begin{figure}[h]
   \centering
   \includegraphics[width=\columnwidth]{figures/chart_errt_errv_mushrooms_ours.pdf}
   \caption{The error on training and validation data for the \texttt{MUSHROOMS} data set}
   \label{fig:mushroomserrterrv}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[h]
   \centering
   \includegraphics[width=\columnwidth]{figures/chart_errt_errv_balance_ours.pdf}
   \caption{The error on training and validation data for the \texttt{BALANCE} data set}
   \label{fig:mushroomserrterrv}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[h]
   \centering
   \includegraphics[width=\columnwidth]{figures/chart_errt_errv_car_ours.pdf}
   \caption{The error on training and validation data for the \texttt{CARS} data set}
   \label{fig:mushroomserrterrv}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[h]
   \centering
   \includegraphics[width=\columnwidth]{figures/chart_errt_errv_tictactoe_ours.pdf}
   \caption{The error on training and validation data for the \texttt{TICTACTOE} data set}
