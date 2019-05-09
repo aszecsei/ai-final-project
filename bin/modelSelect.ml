@@ -37,7 +37,7 @@ let model_select _kind _examples _k write_tree_to write_stat_to should_pretty_pr
         in
         let printHeader outf len =
                 Printf.fprintf outf "%d" 1;
-                for i=2 to len do
+                for i=2 to len-1 do
                         Printf.fprintf outf ",%d" i;
                 done;
                 Printf.fprintf outf "\n";
