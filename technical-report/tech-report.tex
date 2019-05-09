@@ -112,7 +112,7 @@ A two-program approach was used: first, a decision tree generator was developed,
 
 \subsection{Classification}
 
-A second program, \texttt{classify}, was used to classify data using a decision tree generated from \texttt{dtl}. To communicate a decision tree between these two programs, a JSON representation of the decision tree was used. This data format allowed us to produce human-readable representations of the decision trees, which we could use as a sanity check during development.
+A second program, \texttt{classify}, was used to classify data using a decision tree generated from \texttt{dtl}. This program would take in two arguments: The first is a path to a learned decision tree and the second is a path to the corresponding dataset to classify. To communicate a decision tree between \texttt{classify} and \texttt{dtl}, a JSON representation of the decision tree was used. This data format allowed us to produce human-readable representations of the decision trees, which we could use as a sanity check during development. The classifier is also used heavily by the $k$-fold Cross-Validation used for validating our generated models.
 
 \subsection{External Packages}
 
