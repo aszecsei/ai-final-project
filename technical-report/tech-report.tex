@@ -71,10 +71,6 @@ The amount of pruning which occurs is heavily dependent on the data set chosen. 
 
 \section{Methods}
 
-\subsection{Role Assignment}
-
-% TODO: Talk about role assignment
-
 \subsection{Dataset Selection}
 
 Our first step was selecting datasets to use as the foundation for our programs. We used four UCI data sets \cite{Dua:2019}:
@@ -126,18 +122,48 @@ We then ran each of our datasets through the \ref{algo:DecisionTreeLearning} alg
 
 \section{Results}
 
-The results of our experimentation varied quite a bit between datasets. For \texttt{MUSHROOMS} in particular, our algorithm was able to achieve significantly greater accuracy than scikit-learn for smaller maximum depth constraints. However, for other datasets, such as \texttt{TICTACTOE}, our algorithm produced consistently more error-prone results at all depth values, as seen in Figure \ref{fig:tttoursvscikit}.
+The results of our experimentation varied quite a bit between datasets. For \texttt{MUSHROOMS} in particular, our algorithm was able to achieve significantly greater accuracy than scikit-learn for smaller maximum depth constraints (figure \ref{fig:mushoursvscikit}). However, for other datasets, such as \texttt{TICTACTOE}, our algorithm produced consistently more error-prone results at all depth values (figure \ref{fig:tttoursvscikit}).
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figures/chart_ours_v_scikit_variance_mushrooms.pdf}
+  \caption{Error for our algorithm versus scikit-learn on the \texttt{MUSHROOMS} dataset}
+  \label{fig:mushoursvscikit}
+\end{figure}
 
 \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{figures/chart_ours_v_scikit_variance_tictactoe.pdf}
-  \caption{Error for our algorithm versus scikit-learn on the Tic-Tac-Toe dataset}
+  \caption{Error for our algorithm versus scikit-learn on the \texttt{TICTACTOE} dataset}
   \label{fig:tttoursvscikit}
+\end{figure}
+
+The \texttt{CARS} dataset proved the most interesting. While our algorithm had worse accuracy than scikit-learn for small depth values, as the allowed depth increased we began to outperform scikit-learn's algorithm (figure \ref{fig:caroursvscikit}).
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figures/chart_ours_v_scikit_variance_car.pdf}
+  \caption{Error for our algorithm versus scikit-learn on the \texttt{CARS} dataset}
+  \label{fig:caroursvscikit}
 \end{figure}
 
 \section{Discussion}
 
-We were surprised at the discrepancies between our algorithm and the one provided by scikit-learn, as we expected both decision tree algorithms to produce similar results. While an effort was made to produce similar constraints on both algorithms (scikit-learn was used with the ``entropy'' heuristic, as well as the same tree depth constraint), there were a few differences that we were unable to resolve. First, scikit-learn uses ``an optimised version of the CART \cite{DBLP:books/wa/BreimanFOS84} algorithm.'' Additionally, scikit-learn cannot be used with categorical data. To get around this restriction, we used one-hot encoding for the scikit-learn algorithm.
+We were surprised at the discrepancies between our algorithm and the one provided by scikit-learn, as we expected both decision tree algorithms to produce similar results. While an effort was made to produce similar constraints on both algorithms (scikit-learn was used with the ``entropy'' heuristic, as well as the same tree depth constraint), there were a few differences that we were unable to resolve. First, scikit-learn uses ``an optimised version of the CART \cite{DBLP:books/wa/BreimanFOS84} algorithm.''
+
+Additionally, scikit-learn cannot be used with categorical data. To get around this restriction, we used one-hot encoding for the scikit-learn algorithm. This has a negative impact on the depth: scikit-learn's decision tree is forced to be a binary tree, and so depth constraints act far more harshly than they do on our algorithm.
+
+\section{Role Assignment \& Contributions}
+
+\subsection{Alic}
+
+Alic was responsible for implementing the decision tree learning algorithm, the JSON decision tree representation, helped improve the binary executables, and implemented unit testing for several core functions. He implemented the decision tree learning algorithm from Russell and Norvig \cite{russell_norvig_2010}, and added an optional depth constraint. He also was responsible for constructing both the internal decision tree representation and determining the JSON representation for communicating between the \texttt{dtl} and \texttt{classify} binaries. Additionally, he improved the binary executable command-line experience, enabling order-independent options as well as a \texttt{--help} option. Finally, he wrote unit tests for core functions such as \texttt{Plurality-Value}, \texttt{Entropy}, and \texttt{DecisionTreeLearning} itself. He was the project checker.
+
+\subsection{Willem}
+
+Willem worked primarily on decision tree creation, data file read in, and model selection in ocaml. He created a data reader for CSV files, which was used by all of the OCaml binaries (\texttt{dtl}, \texttt{classifier}, and the OCaml-based model selection program). He helped program the \texttt{dtl} executable, which reads in a data file for the training data, then creates a decision tree. He also wrote up the large amount of hard coded information about the different sets of data, including information about the attributes, their possible values, the possible classification, etc. He also created the OCaml version of model selection using cross validation, which takes in various optional and required command line arguments and prints out the selected tree, error rate in the training set, error rate in the validation set, and the chosen max depth. He also elected to be the project recorder.
+
+\subsection{Diego}
 
 %% The acknowledgments section is defined using the "acks" environment
 %% (and NOT an unnumbered section). This ensures the proper
@@ -152,7 +178,7 @@ This work was supported in part by the University of Iowa.
 
 \appendix
 
-\section{Errata}
+\section{Supplemental Graphs \& Data}
 
 \begin{figure}
   \centering
