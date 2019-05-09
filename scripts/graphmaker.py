@@ -72,7 +72,7 @@ def format_axes(ax):
     return ax
 
 
-def generate_errt_vs_errv_chart(data, dataset, display_dataset, algorithm):
+def generate_errt_vs_errv_chart(data, dataset, display_dataset, algorithm, fileNameExt=""):
     print("Generating err_t vs err_v chart - {} - {}".format(dataset, algorithm))
     chart1_df = data[(data.DataSource ==
                       dataset) & (data.Algorithm == algorithm)]
@@ -87,10 +87,10 @@ def generate_errt_vs_errv_chart(data, dataset, display_dataset, algorithm):
     plt.tight_layout()
     format_axes(ax)
     plt.savefig(
-        "./technical-report/figures/chart_errt_errv_{}_{}.pdf".format(dataset.lower(), algorithm.lower()))
+        "./technical-report/figures/chart_errt_errv_{}_{}{}.pdf".format(dataset.lower(), algorithm.lower(), fileNameExt))
 
 
-def generate_variance_chart(data, dataset, display_dataset, algorithm):
+def generate_variance_chart(data, dataset, display_dataset, algorithm,fileNameExt=""):
     print("Generating variance chart - {} - {}".format(dataset, algorithm))
     chart1_df = data[(data.DataSource ==
                       dataset) & (data.Algorithm == algorithm)]
@@ -108,10 +108,10 @@ def generate_variance_chart(data, dataset, display_dataset, algorithm):
     plt.tight_layout()
     format_axes(ax)
     plt.savefig(
-        "./technical-report/figures/chart_variance_{}_{}.pdf".format(dataset.lower(), algorithm.lower()))
+        "./technical-report/figures/chart_variance_{}_{}{}.pdf".format(dataset.lower(), algorithm.lower(),fileNameExt))
 
 
-def generate_ours_v_scikit_chart(data, dataset, display_dataset):
+def generate_ours_v_scikit_chart(data, dataset, display_dataset, fileNameExt=""):
     print("Generating ours v scikit chart - {}".format(dataset))
     chart1_df_ours = data[(data.DataSource ==
                            dataset) & (data.Algorithm == 'OURS')]
@@ -134,10 +134,10 @@ def generate_ours_v_scikit_chart(data, dataset, display_dataset):
     plt.tight_layout()
     format_axes(ax)
     plt.savefig(
-        "./technical-report/figures/chart_ours_v_scikit_{}.pdf".format(dataset.lower()))
+        "./technical-report/figures/chart_ours_v_scikit_{}{}.pdf".format(dataset.lower(),fileNameExt))
 
 
-def generate_ours_v_scikit_variance_chart(data, dataset, display_dataset):
+def generate_ours_v_scikit_variance_chart(data, dataset, display_dataset, fileNameExt):
     print("Generating ours v scikit variance chart - {}".format(dataset))
     chart1_df_ours = data[(data.DataSource ==
                            dataset) & (data.Algorithm == 'OURS')]
@@ -168,7 +168,7 @@ def generate_ours_v_scikit_variance_chart(data, dataset, display_dataset):
     plt.tight_layout()
     format_axes(ax)
     plt.savefig(
-        "./technical-report/figures/chart_ours_v_scikit_variance_{}.pdf".format(dataset.lower()))
+        "./technical-report/figures/chart_ours_v_scikit_variance_{}{}.pdf".format(dataset.lower(),fileNameExt))
 
 
 if __name__ == "__main__":
