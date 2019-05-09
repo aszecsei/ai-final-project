@@ -1,6 +1,8 @@
 \documentclass[screen, authorversion, nonacm, sigconf]{acmart}
 
 \usepackage[linesnumbered,commentsnumbered,ruled]{algorithm2e}
+\usepackage{graphicx}
+\usepackage{booktabs}
 
 \begin{document}
 
@@ -69,15 +71,25 @@ The amount of pruning which occurs is heavily dependent on the data set chosen. 
 
 \section{Methods}
 
+Our first step was selecting datasets to use as the foundation for our programs. We used four UCI data sets \cite{Dua:2019}:
+
+\begin{enumerate}
+  \item \texttt{MUSHROOMS}, a dataset to classify mushrooms as edible or inedible
+  \item \texttt{BALANCE}, a dataset to classify whether or not a scale with objects of varying weights and distances was balanced
+  \item \texttt{CARS}, a dataset of car evaluations
+  \item \texttt{TICTACTOE}, a dataset of Tic-Tac-Toe board states.
+\end{enumerate}
+
 The foundation of our decision tree algorithm was the one provided by Russell and Norvig \cite{russell_norvig_2010} which, in turn, is based on the ID3 algorithm \cite{Quinlan1986}.
 
 \begin{function}
+	\SetAlgoLined
   \SetKwFunction{PluralityValue}{Plurality-Value}
   \SetKwFunction{Importance}{Importance}
   \caption{DecisionTreeLearning($examples$, $attributes$, $parent\_examples$, $depth$)}
   \label{algo:DecisionTreeLearning}
   \uIf{$examples$ is empty}{\Return{\PluralityValue{$parent\_examples$}}}
-  \uElseIf{$depth = 0$}{\Return{\PluralityValue{$examples$}}}
+\uElseIf{$depth = 0$}{\Return{\PluralityValue{$examples$}}}
   \uElseIf{all $examples$ have the same classification $c$}{\Return{a leaf node $c$}}
   \ElseIf{$attributes$ is empty}{\Return{\PluralityValue{$examples$}}}
   $A \gets argmax_{a \in attributes} \Importance{a, examples}$\;
@@ -87,14 +99,31 @@ The foundation of our decision tree algorithm was the one provided by Russell an
     $subtree \gets \DecisionTreeLearning{exs, attributes - A, examples, depth - 1}$\;
     add a branch to $tree$ with label $\left(A = v_k\right)$ and subtree $subtree$\;
   }
-  \Return{$tree$}
+  \Return{$tree$}\;
 \end{function}
 
-We selected four data sets from the Machine Learning Repository at \url{http://archive.ics.uci.edu/ml/datasets.php}. We then ran each through the \ref{algo:DecisionTreeLearning} algorithm with maximum depths ranging from 1 to 10 and performed $k$-fold cross-validation to determine error, with $k = 4$.
+A two-program approach was used: first, a decision tree generator was developed, called \texttt{dtl}. This program would take in a flag to determine which of our data sets was represented by the input. As the ordering of attributes and classes was inconsistent between datasets, this allowed us to significantly simplify the process of importing data.
+
+A second program, \texttt{classify}, was used to classify data using a decision tree generated from \texttt{dtl}. To communicate a decision tree between these two programs, a JSON representation of the decision tree was used. This data format allowed us to produce human-readable representations of the decision trees, which we could use as a sanity check during development.
+
+Finally, we used Python to generate data for $k$-fold cross-validation for both our decision tree program as well as the decision tree algorithm provided by scikit-learn \cite{scikit-learn}. This provided a simple baseline for our experimentation.
+
+We then ran each of our datasets through the \ref{algo:DecisionTreeLearning} algorithm with maximum depths ranging from 1 to 10 and performed $k$-fold cross-validation to determine error rates, with $k = 4$. As we noticed that subsequent experiments could obtain dramatically varying error rates, we repeated each of these experiments for 100 trials, to determine both average error rates and the variance of these error rates.
 
 \section{Results}
 
+The results of our experimentation varied quite a bit between datasets. For \texttt{MUSHROOMS} in particular, our algorithm was able to achieve significantly greater accuracy than scikit-learn for smaller maximum depth constraints. However, for other datasets, such as \texttt{TICTACTOE}, our algorithm produced consistently more error-prone results at all depth values, as seen in Figure \ref{fig:tttoursvscikit}.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figures/chart_ours_v_scikit_variance_tictactoe.pdf}
+  \caption{Error for our algorithm versus scikit-learn on the Tic-Tac-Toe dataset}
+  \label{fig:tttoursvscikit}
+\end{figure}
+
 \section{Discussion}
+
+We were surprised at the discrepancies between our algorithm and the one provided by scikit-learn, as we expected both decision tree algorithms to produce similar results. While an effort was made to produce similar constraints on both algorithms (scikit-learn was used with the ``entropy'' heuristic, as well as the same tree depth constraint), there were a few differences that we were unable to resolve. First, scikit-learn uses ``an optimised version of the CART \cite{DBLP:books/wa/BreimanFOS84} algorithm.'' Additionally, scikit-learn cannot be used with categorical data. To get around this restriction, we used one-hot encoding for the scikit-learn algorithm.
 
 %% The acknowledgments section is defined using the "acks" environment
 %% (and NOT an unnumbered section). This ensures the proper
@@ -109,13 +138,35 @@ This work was supported in part by the University of Iowa.
 
 \appendix
 
-\section{Research Methods}
+\section{Errata}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi malesuada, quam in pulvinar varius, metus nunc fermentum urna, id sollicitudin purus odio sit amet enim. Aliquam ullamcorper eu ipsum vel mollis. Curabitur quis dictum nisl. Phasellus vel semper risus, et lacinia dolor. Integer ultricies commodo sem nec semper.
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figures/chart_errt_errv_mushrooms_ours.pdf}
+  \caption{The error on training and validation data for the \texttt{MUSHROOMS} data set}
+  \label{fig:mushroomserrterrv}
+\end{figure}
 
-\section{Online Resources}
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figures/chart_errt_errv_balance_ours.pdf}
+  \caption{The error on training and validation data for the \texttt{BALANCE} data set}
+  \label{fig:mushroomserrterrv}
+\end{figure}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi malesuada, quam in pulvinar varius, metus nunc fermentum urna, id sollicitudin purus odio sit amet enim. Aliquam ullamcorper eu ipsum vel mollis. Curabitur quis dictum nisl. Phasellus vel semper risus, et lacinia dolor. Integer ultricies commodo sem nec semper.
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figures/chart_errt_errv_car_ours.pdf}
+  \caption{The error on training and validation data for the \texttt{CARS} data set}
+  \label{fig:mushroomserrterrv}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figures/chart_errt_errv_tictactoe_ours.pdf}
+  \caption{The error on training and validation data for the \texttt{TICTACTOE} data set}
+  \label{fig:mushroomserrterrv}
+\end{figure}
 
 \end{document}
 \endinput

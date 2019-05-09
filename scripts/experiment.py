@@ -5,6 +5,7 @@ from enum import Enum
 import subprocess
 from sklearn import tree
 import os
+import csv
 
 
 class Config:
@@ -46,7 +47,7 @@ def get_type_flag(data_type):
         return "TICTACTOE"
 
 
-def get_decision_tree(X_train, y_train, data_type):
+def get_decision_tree(X_train, y_train, data_type, depth=None):
     # Write training data to file
     training_data = X_train.copy()
     if data_type == DataType.BALANCE or data_type == DataType.MUSHROOMS:
@@ -61,8 +62,12 @@ def get_decision_tree(X_train, y_train, data_type):
     training_data.to_csv('./temp/training.csv', header=False, index=False)
 
     data_type_flag = get_type_flag(data_type)
-    result = subprocess.run(
-        ['./_build/default/bin/dtl.exe', data_type_flag, './temp/training.csv'], stdout=subprocess.PIPE)
+    if depth == None:
+        result = subprocess.run(
+            ['./_build/default/bin/dtl.exe', data_type_flag, './temp/training.csv'], stdout=subprocess.PIPE)
+    else:
+        result = subprocess.run(
+            ['./_build/default/bin/dtl.exe', '-d', str(depth), data_type_flag, './temp/training.csv'], stdout=subprocess.PIPE)
     # print(result.stdout)
 
     # Write the JSON decision tree to a file
@@ -74,11 +79,12 @@ def get_decision_tree(X_train, y_train, data_type):
 def clean():
     # Delete all temp files
     os.remove('./temp/training.csv')
+    os.remove('./temp/decision.json')
+    os.remove('./temp/test.csv')
     os.rmdir('./temp')
 
 
-def run_validation(data_type, model, depth=None):
-    print("Running validations!")
+def run_validation(data_type, model, depth=None, num_trials=1):
     if data_type == DataType.BALANCE:
         data = pd.read_csv("./data/balance/balance-scale.data", names=[
             'class', 'leftweight', 'leftdistance', 'rightweight', 'rightdistance'
@@ -102,43 +108,68 @@ def run_validation(data_type, model, depth=None):
 
     X = data.drop('class', axis=1)
     y = data[['class']]
-    print("# of data points:", X.shape[0])
-    print("# of attributes:", X.shape[1])
     assert(X.shape[0] == y.shape[0])
 
     if model == Model.SCIKIT:
         # Use one-hot encoding
         X = pd.get_dummies(X, drop_first=True)
 
-    if Config.LEAVE_ONE_OUT:
-        kf = KFold(n_splits=X.shape[1])
-    else:
-        kf = KFold(n_splits=4)
+    data = []
+    for i in range(num_trials):
+        if Config.LEAVE_ONE_OUT:
+            kf = KFold(n_splits=X.shape[1], shuffle=True)
+        else:
+            kf = KFold(n_splits=4, shuffle=True)
+        error_rates_t = []
+        error_rates_v = []
+        for train, test in kf.split(X):
+            X_train, y_train = X.loc[train, :], y.loc[train, :]
+            X_test, y_test = X.loc[test, :], y.loc[test, :]
 
-    error_rates = []
-    for train, test in kf.split(X):
-        X_train, y_train = X.loc[train, :], y.loc[train, :]
-        X_test, y_test = X.loc[test, :], y.loc[test, :]
+            if model == Model.OURS:
+                get_decision_tree(X_train, y_train, data_type, depth)
+                y_pred = classify_data(X_test)
+                y_t_pred = classify_data(X_train)
+            elif model == Model.SCIKIT:
+                dt = tree.DecisionTreeClassifier(
+                    criterion="entropy", max_depth=depth)
+                dt.fit(X_train, y_train)
+                y_pred = dt.predict(X_test)
+                y_t_pred = dt.predict(X_train)
+            error_rates_v.append(accuracy_score(y_test, y_pred))
+            error_rates_t.append(accuracy_score(y_train, y_t_pred))
 
-        if model == Model.OURS:
-            get_decision_tree(X_train, y_train, data_type)
-            y_pred = classify_data(X_test)
-        elif model == Model.SCIKIT:
-            dt = tree.DecisionTreeClassifier(criterion="entropy")
-            dt.fit(X_train, y_train)
-            y_pred = dt.predict(X_test)
-        error_rates.append(accuracy_score(y_test, y_pred))
+        err_v = 1.0 - (sum(error_rates_v) / len(error_rates_v))
+        err_t = 1.0 - (sum(error_rates_t) / len(error_rates_t))
 
-    avg = sum(error_rates) / len(error_rates)
-    print("ACCURACY:", avg)
-    print("ERROR RATE:", 1.0 - avg)
+        data.append([err_t, err_v])
+    return data
 
 
 if __name__ == "__main__":
-    dt = DataType.MUSHROOMS
-    print("--------- OURS ---------")
-    run_validation(dt, Model.OURS)
-    print("-------- SCIKIT --------")
-    run_validation(dt, Model.SCIKIT)
+    dts = [DataType.BALANCE, DataType.CAR_EVALUATION,
+           DataType.MUSHROOMS, DataType.TTT]
+    ms = [Model.OURS, Model.SCIKIT]
 
-    # clean()
+    ofile = open(
+        "./data.csv", 'w')
+    writer = csv.writer(ofile, dialect='excel')
+
+    for dt in dts:
+        for m in ms:
+            for max_depth in range(10):
+                max_depth += 1
+
+                m_string = "OURS"
+                if m == Model.SCIKIT:
+                    m_string = "SCIKIT"
+                data = [[get_type_flag(dt), m_string, str(
+                    max_depth)] + x for x in run_validation(dt, m, max_depth, 100)]
+                writer.writerows(data)
+
+                print("Wrote {}-{} at depth {}".format(get_type_flag(dt),
+                                                       m_string, str(max_depth)))
+
+    ofile.close()
+
+    clean()
