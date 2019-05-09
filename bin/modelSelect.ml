@@ -5,7 +5,7 @@ open Yojson.Safe
 open Lib.Decision_tree_j
 open Cmdliner
 
-let model_select _kind _examples _k write_tree_to write_errt_to write_errv_to write_bestdepth_to should_pretty_print _max_depth =
+let model_select _kind _examples _k write_tree_to write_stat_to should_pretty_print _max_depth =
         let kind = getDataType _kind in
         let cci = getCCI kind in
         let max_depth =
@@ -35,6 +35,13 @@ let model_select _kind _examples _k write_tree_to write_errt_to write_errv_to wr
                 done;
                 !str
         in
+        let printHeader outf len =
+                Printf.fprintf outf "%d" 1;
+                for i=2 to len do
+                        Printf.fprintf outf ",%d" i;
+                done;
+                Printf.fprintf outf "\n";
+        in
         let errTstr = arr_to_csv errT in
         let errVstr = arr_to_csv errV in
         Printf.printf "%s\n\n" tree_str;
@@ -50,34 +57,16 @@ let model_select _kind _examples _k write_tree_to write_errt_to write_errv_to wr
                                     )
                 | _ -> ()
         in
-        let _ =
-                match write_errt_to with 
-                | Some(out_path) -> (
-                                        let outf = open_out out_path in
-                                        Printf.fprintf outf "%s" (arr_to_csv errT);
-                                        close_out outf;
-                                     )
-                | _ -> ()
-        in
-        let _ =
-                match write_errv_to with
-                | Some(out_path) -> (
-                                        let outf = open_out out_path in
-                                        Printf.fprintf outf "%s" (arr_to_csv errT);
-                                        close_out outf;
-                                    )
-                | _ -> ()
-        in
-        let _ =
-                match write_bestdepth_to with
-                | Some(out_path) -> (
-                                        let outf = open_out out_path in
-                                        Printf.fprintf outf "%d" bestDepth;
-                                        close_out outf;
-                                    )
-                | _ -> ()
-        in
-        Printf.printf ""
+        match write_stat_to with 
+        | Some(out_path) -> (
+                                let outf = open_out out_path in
+                                printHeader outf (Array.length errT);
+                                Printf.fprintf outf "%s\n" (arr_to_csv errT);
+                                Printf.fprintf outf "%s\n" (arr_to_csv errV);
+                                Printf.fprintf outf "%d" bestDepth;
+                                close_out outf;
+                            )
+        | _ -> ()
 
 let kind =
         let doc = "A flag to determine which dataset is being used by the application." in
@@ -95,17 +84,10 @@ let write_tree_to =
         let doc = "An optional file to write the tree as JSON output." in
         Arg.(value & opt (some string) None & info ["w"; "tree_dest"] ~docv:"TREE_DEST" ~doc)
 
-let write_errt_to =
-        let doc = "An optional file to write the error rates for training set in CSV format where the first column is depth=1." in
-        Arg.(value & opt (some string) None & info ["t"; "errt_dest"] ~docv:"ERRT_DEST" ~doc)
+let write_stat_to =
+        let doc = "An optional file to write the stats in order of rows; depth, errT, errV, depth with berst errv." in
+        Arg.(value & opt (some string) None & info ["W"; "stat_dest"] ~docv:"STAT_DEST" ~doc)
 
-let write_errv_to =
-        let doc = "An optional file to write the error rates for validation set in CSV format where the first column is depth=1." in
-        Arg.(value & opt (some string) None & info ["v"; "errv_dest"] ~docv:"ERRV_DEST" ~doc)
-
-let write_bestdepth_to =
-        let doc = "An optional file to write the best depth to." in
-        Arg.(value & opt (some string) None & info ["b"; "bestdepth_dest"] ~docv:"BESTDEPTH_DEST" ~doc)
 let should_pretty_print =
         let doc = "Output a human-readable JSON file." in
         Arg.(value & flag & info ["p"; "pretty"] ~doc)
@@ -114,7 +96,7 @@ let max_depth =
         let doc = "An optional maximum depth. (defualt is 10)" in
         Arg.(value & opt (some int) None & info ["d"; "depth"] ~docv:"DEPTH" ~doc)
 
-let model_select_t = Term.(const model_select $ kind $ examples $ kValue $ write_tree_to $ write_errt_to $ write_errv_to $ write_bestdepth_to $ should_pretty_print $ max_depth)
+let model_select_t = Term.(const model_select $ kind $ examples $ kValue $ write_tree_to $ write_stat_to $ should_pretty_print $ max_depth)
 
 let info =
         let doc = "does model selection with DTL with max depth" in
