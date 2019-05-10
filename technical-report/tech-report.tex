@@ -3,6 +3,7 @@
 \usepackage[linesnumbered,commentsnumbered,ruled]{algorithm2e}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{tabularx}
 
 \begin{document}
 
@@ -82,7 +83,7 @@ Our first step was selecting datasets to use as the foundation for our programs.
   \item \texttt{TICTACTOE}, a dataset of Tic-Tac-Toe board states.
 \end{enumerate}
 
-These datasets were selected as they have a variety of both number of attributes and number of examples. \texttt{MUSHROOMS} has 8124 examples with 22 attributes, for example, while \texttt{BALANCE} only has 625 examples and 5 attributes. This variety ensured that our algorithm testing would not be skewed by certain kinds of datasets.
+These datasets were selected as they have a variety of both number of attributes and number of examples. \texttt{MUSHROOMS} has 8124 examples with 22 attributes, for example, while \texttt{BALANCE} only has 625 examples and 5 attributes. In addition, some of our datasets were calculated while others were collected from real-world data. We tried to choose a diverse selection of datasets so that our algorithm testing results would not be overly skewed towards certain types of datasets.
 
 \subsection{Decision Tree Generation}
 
@@ -108,7 +109,7 @@ The foundation of our decision tree algorithm was the one provided by Russell an
   \Return{$tree$}\;
 \end{function}
 
-A two-program approach was used: first, a decision tree generator was developed, called \texttt{dtl}. This program would take in a flag to determine which of our data sets was represented by the input. As the ordering of attributes and classes was inconsistent between datasets, this allowed us to significantly simplify the process of importing data.
+A two-stage approach was used: first, a decision tree generator was developed, called \texttt{dtl}. This program would take in a flag to determine which of our data sets was represented by the input. As the ordering of attributes and classes was inconsistent between datasets, this allowed us to significantly simplify the process of importing data.
 
 \subsection{Classification}
 
@@ -116,13 +117,15 @@ A second program, \texttt{classify}, was used to classify data using a decision 
 
 \subsection{External Packages}
 
-To assist with the command-line interface, we used the \texttt{cmdliner} module. This allowed us to define data types and arguments for input, and then it handled the majority of the command-line parsing. It also automatically generated a \texttt{--help} option to inform users of what the different options were. This massively simplified developing optional new features.
+To assist with the command-line interface, we used the \texttt{cmdliner} module. This allowed us to define data types and arguments for input, and then it handled the majority of the command-line parsing. It also automatically generated a \texttt{--help} option to inform users of what the different options were. This massively simplified developing optional new features, as we could simply add an optional flag and \texttt{cmdliner} would handle parsing it.
 
 Additionally, we used \texttt{adtgen} to generate a JSON serializer and deserializer. This was done at the very start of the project, allowing us to work with and visualize decision tree data from the very beginning. This also meant that as our decision tree model was updated and changed, the JSON code was automatically shared and kept up-to-date between \texttt{dtl} and \texttt{classify}.
 
 \subsection{$k$-fold Cross-Validation}
 
-Finally, we used Python to generate data for $k$-fold cross-validation for both our decision tree program as well as the decision tree algorithm provided by scikit-learn \cite{scikit-learn}. This provided a simple baseline for our experimentation.
+Finally, we split $k$-fold cross-validation into two implementations. The first, done in Python, was very simple to get working, and so we were able to start collecting data fairly early on in the process. At the same time, we developed a model selection program in OCaml, which used a similar algorithm to the one in the Python script.
+
+Using Python to generate data for $k$-fold cross-validation allowed us to collect data from both our decision tree program as well as the decision tree algorithm provided by scikit-learn \cite{scikit-learn}. This provided a simple baseline for our experimentation.
 
 We then ran each of our datasets through the \ref{algo:DecisionTreeLearning} algorithm with maximum depths ranging from 1 to 10 and performed $k$-fold cross-validation to determine error rates, with $k = 4$. As we noticed that subsequent experiments could obtain dramatically varying error rates, we repeated each of these experiments for 100 trials, to determine both average error rates and the variance of these error rates.
 
@@ -132,16 +135,18 @@ The results of our experimentation varied quite a bit between datasets. For \tex
 
 \begin{figure}
   \centering
-  \includegraphics[width=\columnwidth]{figures/chart_ours_v_scikit_variance_mushrooms.pdf}
-  \caption{Error ($\pm 2 \times \sigma$) for our algorithm versus scikit-learn on the \texttt{MUSHROOMS} dataset}
+  \includegraphics[width=\columnwidth]{figures/chart_ours_v_scikit_mushrooms.pdf}
+  \caption{Error for our algorithm versus scikit-learn on the \texttt{MUSHROOMS} dataset}
   \label{fig:mushoursvscikit}
+  \Description{A rapidly decreasing graph, with our algorithm starting at around $2.5$ percent error and dropping to near-zero, and scikit-learn starting at around $10$ percent error and dropping to similar levels at a depth of $5$.}
 \end{figure}
 
 \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{figures/chart_ours_v_scikit_variance_tictactoe.pdf}
-  \caption{Error ($\pm 2 \times \sigma$) for our algorithm versus scikit-learn on the \texttt{TICTACTOE} dataset}
+  \caption{Error ($\pm 2 \times SD$) for our algorithm versus scikit-learn on the \texttt{TICTACTOE} dataset}
   \label{fig:tttoursvscikit}
+  \Description{A graph in which both our algorithm and that of scikit-learn are approximately parallel. Ours starts at approximately $40$ percent error and drops to $20$ percent at depth five, while scikit-learn starts at approximately $30$ percent and drops to less than $10$ percent at depth 8.}
 \end{figure}
 
 The \texttt{CARS} dataset proved the most interesting. While our algorithm had worse accuracy than scikit-learn for small depth values, as the allowed depth increased we began to outperform scikit-learn's algorithm (figure \ref{fig:caroursvscikit}).
@@ -149,17 +154,22 @@ The \texttt{CARS} dataset proved the most interesting. While our algorithm had w
 \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{figures/chart_ours_v_scikit_variance_car.pdf}
-  \caption{Error ($\pm 2 \times \sigma$) for our algorithm versus scikit-learn on the \texttt{CARS} dataset}
+  \caption{Error ($\pm 2 \times SD$) for our algorithm versus scikit-learn on the \texttt{CARS} dataset}
   \label{fig:caroursvscikit}
+  \Description{A graph in which our error starts at around $40$ percent and drops to less than $10$ percent at depth five; scikit-learn takes until depth $9$ to reach a similar level, despite it starting at $30$ percent.}
 \end{figure}
-
-Overall, we found that our algorithm performed much worse on datasets with a large amount of interconnected data, such as Tic-Tac-Toe, where the impact of one attribute was heavily dependent on all of the other attributes. However, for more traditional classification problems, such as evaluating cars or mushrooms, our algorithm was very accurate.
 
 \section{Discussion}
 
+Overall, we found that our algorithm performed much worse on datasets with a large amount of interconnected data, such as Tic-Tac-Toe, where the impact of one attribute was heavily dependent on all of the other attributes. However, for more traditional classification problems, such as evaluating cars or mushrooms, our algorithm was very accurate.
+
+From our results, we saw that the only dataset we started overfitting on was \texttt{TICTACTOE}. This was likely due to the datasets we chose having significant complexity; although \texttt{BALANCE} had the fewest attributes, its classifications relied on combinations of all of them. Our simplest datasets were also calculated classifications, reducing the amount of noise in the data; the more complex models were the ones gathered from real-world data and so were at the most risk of overfitting - but the number of attributes was so high that a maximum depth of 10 didn't appear to reach an optimal model selection value.
+
 We were surprised at the discrepancies between our algorithm and the one provided by scikit-learn, as we expected both decision tree algorithms to produce similar results. While an effort was made to produce similar constraints on both algorithms (scikit-learn was used with the ``entropy'' heuristic, as well as the same tree depth constraint), there were a few differences that we were unable to resolve. First, scikit-learn uses ``an optimised version of the CART \cite{DBLP:books/wa/BreimanFOS84} algorithm.''
 
-Additionally, scikit-learn cannot be used with categorical data. To get around this restriction, we used one-hot encoding for the scikit-learn algorithm. This has a negative impact on the depth: scikit-learn's decision tree is forced to be a binary tree, and so depth constraints act far more harshly than they do on our algorithm.
+Additionally, scikit-learn could not be used with categorical data. To get around this restriction, we used one-hot encoding for the scikit-learn algorithm. This causes a negative impact on the depth: scikit-learn's decision tree was forced to be a binary tree, and so depth constraints acted far more harshly than they did on our algorithm.
+
+The algorithm used by scikit-learn resulted in much closer variance than ours; however, scikit tended to keep a constant variance, while our algorithm produced one which decreased as we increased the maximum depth of the tree. This indicates to us that while scikit-learn's algorithm produces consistently good results for most datasets, our algorithm can produce very good (or very bad) results for those same datasets.
 
 \section{Role Assignment \& Contributions}
 
@@ -172,6 +182,8 @@ Alic was responsible for implementing the decision tree learning algorithm, the 
 Willem worked primarily on decision tree creation, data file read in, and model selection in ocaml. He created a data reader for CSV files, which was used by all of the OCaml binaries (\texttt{dtl}, \texttt{classifier}, and the OCaml-based model selection program). He helped program the \texttt{dtl} executable, which reads in a data file for the training data, then creates a decision tree. He also wrote up the large amount of hard coded information about the different sets of data, including information about the attributes, their possible values, the possible classification, etc. He also created the OCaml version of model selection using cross validation, which takes in various optional and required command line arguments and prints out the selected tree, error rate in the training set, error rate in the validation set, and the chosen max depth. He also elected to be the project recorder.
 
 \subsection{Diego}
+
+Lobortis scelerisque fermentum dui faucibus in ornare quam viverra orci sagittis eu volutpat odio facilisis mauris sit amet massa vitae tortor condimentum lacinia quis vel eros donec ac odio tempor orci dapibus ultrices in iaculis nunc sed augue lacus viverra vitae congue eu consequat ac felis donec et odio pellentesque diam volutpat commodo sed egestas egestas fringilla phasellus faucibus scelerisque eleifend donec pretium vulputate sapien nec sagittis aliquam malesuada bibendum arcu vitae elementum curabitur vitae nunc sed velit dignissim sodales ut eu sem integer vitae justo eget magna fermentum iaculis eu non diam phasellus vestibulum lorem sed risus ultricies tristique nulla aliquet enim tortor at auctor urna nunc id cursus metus aliquam eleifend mi in nulla posuere sollicitudin aliquam ultrices sagittis orci a scelerisque purus semper eget duis at tellus at urna condimentum mattis pellentesque id nibh tortor id aliquet.
 
 %% The acknowledgments section is defined using the "acks" environment
 %% (and NOT an unnumbered section). This ensures the proper
@@ -188,33 +200,57 @@ This work was supported in part by the University of Iowa.
 
 \section{Supplemental Graphs \& Data}
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\columnwidth]{figures/chart_errt_errv_mushrooms_ours.pdf}
   \caption{The error on training and validation data for the \texttt{MUSHROOMS} data set}
   \label{fig:mushroomserrterrv}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\columnwidth]{figures/chart_errt_errv_balance_ours.pdf}
   \caption{The error on training and validation data for the \texttt{BALANCE} data set}
-  \label{fig:mushroomserrterrv}
+  \label{fig:balanceerrterrv}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\columnwidth]{figures/chart_errt_errv_car_ours.pdf}
   \caption{The error on training and validation data for the \texttt{CARS} data set}
-  \label{fig:mushroomserrterrv}
+  \label{fig:carerrterrv}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\columnwidth]{figures/chart_errt_errv_tictactoe_ours.pdf}
   \caption{The error on training and validation data for the \texttt{TICTACTOE} data set}
-  \label{fig:mushroomserrterrv}
+  \label{fig:ttterrterrv}
 \end{figure}
+
+\begin{table*}
+  \centering
+  \begin{tabular}{lrrrrrrrr}
+    \toprule
+    {} & \multicolumn{2}{c}{\texttt{BALANCE}} & \multicolumn{2}{c}{\texttt{CARS}} & \multicolumn{2}{c}{\texttt{MUSHROOMS}} & \multicolumn{2}{c}{\texttt{TICTACTOE}} \\
+    \cmidrule(r){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(l){8-9} 
+    MaxDepth &     Avg Error & SD &     Avg Error & SD &     Avg Error & SD &     Avg Error & SD \\
+    \midrule
+    1        &  0.404191 &           0.012534 &  0.299769 &       6.409876e-17 &  0.113245 &       6.927670e-17 &  0.301035 &           0.004068 \\
+    2        &  0.359704 &           0.019186 &  0.262998 &       8.538287e-03 &  0.072871 &       6.937492e-17 &  0.319115 &           0.006669 \\
+    3        &  0.299806 &           0.013906 &  0.221366 &       8.831223e-03 &  0.038405 &       3.836886e-17 &  0.268329 &           0.006638 \\
+    4        &  0.253065 &           0.012958 &  0.213860 &       8.886552e-03 &  0.012629 &       1.224688e-04 &  0.185432 &           0.012746 \\
+    5        &  0.227718 &           0.011899 &  0.190035 &       7.656538e-03 &  0.000446 &       1.144321e-04 &  0.110016 &           0.011334 \\
+    6        &  0.235505 &           0.011984 &  0.157795 &       6.878887e-03 &  0.000137 &       1.420214e-04 &  0.078250 &           0.012445 \\
+    7        &  0.234140 &           0.011871 &  0.131944 &       7.268610e-03 &  0.000027 &       9.986264e-05 &  0.059186 &           0.009237 \\
+    8        &  0.227516 &           0.011412 &  0.104103 &       6.179355e-03 &  0.000025 &       9.896975e-05 &  0.053361 &           0.008296 \\
+    9        &  0.224897 &           0.010037 &  0.084815 &       5.794818e-03 &  0.000022 &       8.814005e-05 &  0.051273 &           0.008884 \\
+    10       &  0.222565 &           0.009456 &  0.077986 &       5.976894e-03 &  0.000016 &       7.951336e-05 &  0.051618 &           0.009168 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Errors and standard deviations of decision trees for different datasets}
+  \label{tab:errs}
+\end{table*}
 
 \end{document}
 \endinput
