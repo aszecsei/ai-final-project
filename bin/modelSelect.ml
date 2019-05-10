@@ -79,7 +79,8 @@ let model_select _kind _examples _k write_tree_to write_stat_to should_pretty_pr
                                         Printf.fprintf outf "OURS,";
                                         Printf.fprintf outf "%d," i;
                                         Printf.fprintf outf "%f," (Array.get errT i);
-                                        Printf.fprintf outf "%f\n" (Array.get errV i);
+                                        Printf.fprintf outf "%f," (Array.get errV i);
+                                        Printf.fprintf outf "%d\n" bestDepth;
                                 done;
                                 close_out outf;
                             )
