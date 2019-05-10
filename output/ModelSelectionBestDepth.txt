@@ -1,0 +1,16 @@
+BALANCE:
+	Mean: 6.140000
+	Median: 6.000000
+	STD: 2.268379
+TICTACTOE:
+	Mean: 7.870000
+	Median: 8.000000
+	STD: 1.376588
+Mushrooms:
+	Mean: 4.020000
+	Median: 4.000000
+	STD: 0.140070
+CAR:
+	Mean: 5.370000
+	Median: 4.000000
+	STD: 2.262348
