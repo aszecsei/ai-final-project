@@ -5,7 +5,7 @@ open Yojson.Safe
 open Lib.Decision_tree_j
 open Cmdliner
 
-let model_select _kind _examples _k write_tree_to write_stat_to should_pretty_print _max_depth quiet =
+let model_select _kind _examples _k write_tree_to write_stat_to should_pretty_print _max_depth quiet write_gcsv_to =
         let kind = getDataType _kind in
         let cci = getCCI kind in
         let max_depth =
@@ -59,13 +59,28 @@ let model_select _kind _examples _k write_tree_to write_stat_to should_pretty_pr
                                     )
                 | _ -> ()
         in
-        match write_stat_to with 
+        let _ =
+                match write_stat_to with 
+                | Some(out_path) -> (
+                                        let outf = open_out out_path in
+                                        printHeader outf (Array.length errT);
+                                        Printf.fprintf outf "%s\n" (arr_to_csv errT);
+                                        Printf.fprintf outf "%s\n" (arr_to_csv errV);
+                                        Printf.fprintf outf "%d" bestDepth;
+                                        close_out outf;
+                                    )
+                | _ -> ()
+        in
+        match write_gcsv_to with
         | Some(out_path) -> (
-                                let outf = open_out out_path in
-                                printHeader outf (Array.length errT);
-                                Printf.fprintf outf "%s\n" (arr_to_csv errT);
-                                Printf.fprintf outf "%s\n" (arr_to_csv errV);
-                                Printf.fprintf outf "%d" bestDepth;
+                                let outf = open_out_gen [Open_append; Open_creat] 0o666 out_path in
+                                for i=1 to ((Array.length errT)-1) do
+                                        Printf.fprintf outf "%s," _kind;
+                                        Printf.fprintf outf "OURS,";
+                                        Printf.fprintf outf "%d," i;
+                                        Printf.fprintf outf "%f," (Array.get errT i);
+                                        Printf.fprintf outf "%f\n" (Array.get errV i);
+                                done;
                                 close_out outf;
                             )
         | _ -> ()
@@ -102,7 +117,10 @@ let supress =
         let doc = "flag to supress std output" in
         Arg.(value & flag & info ["q"; "quiet"] ~doc)
 
-let model_select_t = Term.(const model_select $ kind $ examples $ kValue $ write_tree_to $ write_stat_to $ should_pretty_print $ max_depth $ supress)
+let graphCSV = 
+        let doc ="an optional file to write a CSV file that is readable to the python grapher" in
+        Arg.(value & opt (some string) None & info ["g"; "gstat_dest"] ~docv:"GSTAT_DEST" ~doc)
+let model_select_t = Term.(const model_select $ kind $ examples $ kValue $ write_tree_to $ write_stat_to $ should_pretty_print $ max_depth $ supress $ graphCSV)
 
 let info =
         let doc = "does model selection with DTL with max depth" in

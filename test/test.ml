@@ -3,6 +3,7 @@ open Lib.Creator
 open Lib.Decision_tree
 open Lib.Decision_tree_j
 open Lib.Types
+open Lib.Classify
 
 let suite =
   "Project" >::: [
@@ -151,6 +152,61 @@ let suite =
       | None -> failwith "No result found"
     );
 
+    "classify balance" >:: (fun () ->
+      let balanced_leaf = `Leaf { result="B" } in
+      let right_leaning_leaf = `Leaf {result="R"} in
+      let right_weight_node = `Node {category="Right-Weight"; category_index=2; children=[
+        { option="1"; child=balanced_leaf};
+        { option="2"; child=right_leaning_leaf};]} in
+      let right_distance_node = `Node {category="Right-Distance"; category_index=3; children=[
+        { option="1"; child=right_weight_node};]} in
+      let left_distance_node = `Node {category="Left-Distance"; category_index=1; children=[
+        { option="1"; child=right_distance_node};]} in
+      let root_node = `Node {category="Left-Weight"; category_index=0; children=[
+        { option="1"; child=left_distance_node};]} in
+      let examples = [|
+        { attributes=["1"; "1"; "1"; "1";]; value="B" };
+        { attributes=["1"; "1"; "2"; "1";]; value="R" };
+      |] in 
+      assert_equal (classify root_node examples.(0)) examples.(0).value;
+      assert_equal (classify root_node examples.(1)) examples.(1).value;
+    );
+
+    "classify cars" >:: (fun () ->
+      let acc_leaf = `Leaf { result="acc" } in
+      let unacc_leaf = `Leaf {result="unacc" } in 
+      let maint_node = `Node { category="maint"; category_index=1; children=[
+        { option="med"; child=acc_leaf};
+        { option="vhigh"; child=unacc_leaf}
+      ]} in
+      let buying_node = `Node { category="buying"; category_index=0; children=[
+        { option="vhigh"; child=maint_node}]} in
+      let examples = [|
+        { attributes = ["vhigh"; "med"; "2"; "4"; "big"; "med"; "acc"]; value="acc"};
+        { attributes = ["vhigh"; "vhigh"; "2"; "2"; "small"; "low"; "unacc"]; value="unacc"}
+      |] in 
+
+      assert_equal (classify buying_node examples.(0)) examples.(0).value;
+      assert_equal (classify buying_node examples.(1)) examples.(1).value;
+    );
+
+    "classify coin flip is heads" >:: (fun () ->
+      let yes_leaf = `Leaf { result="yes" } in
+      let no_leaf = `Leaf { result="no" } in
+      let root_node = `Node { category="heads_or_tails"; category_index=0; children=[
+        { option="heads"; child=yes_leaf};
+        { option="tails"; child=no_leaf};
+      ]} in
+      let examples = [|
+        { attributes=["heads"]; value="yes"};
+        { attributes=["tails"]; value="no"};
+      |] in
+
+      assert_equal (classify root_node examples.(0)) examples.(0).value;
+      assert_equal (classify root_node examples.(1)) examples.(1).value
+    );
+
+(* 
     "decsion_tree_learning" >:: (fun () ->
       let possible_classifications = [|"yes"; "no"|] in
       let outlook = { name = "outlook"; possible_values=[|"sunny"; "overcast"; "rain"|]; index=0; } in
@@ -197,7 +253,7 @@ let suite =
       assert_equal (string_of_decision_tree result) (string_of_decision_tree (outlook_node :> decision_tree))
       (* TODO: Make a function to check actual tree equality *)
       (* Currently this is order-dependent *)
-    );
+    ); *)
   ]
 
 let _ = run_test_tt suite
