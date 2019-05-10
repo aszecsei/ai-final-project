@@ -171,6 +171,8 @@ Additionally, scikit-learn could not be used with categorical data. To get aroun
 
 The algorithm used by scikit-learn resulted in much closer variance than ours; however, scikit tended to maintain a constant variance, while our DecisionTreeLearning algorithm decreased in variance as we increased the maximum depth of the tree. This indicated to us that while scikit-learn's algorithm produced consistently good results for most datasets, our algorithm could produce both much better or much worse results for those same datasets.
 
+When performing model selection, small depth trees often had high error variance. This caused us to occasionally get very small error rates for lower maximum depth values, which did not accurately indicate the error rates for the whole dataset. Running the cross-validation repeatedly for these small maximum depth values gave us a better estimation, however for a single model selection we found our results skewed heavily by these early outliers.
+
 For future work, we would like to make the \texttt{dtl} algorithm more generalized. Rather than inputting a specific flag to use hardcoded data, providing a more extensible interface for users other than ourselves. Additionally, we would be able to more closely emulate scikit-learn's functionality by using one-hot encoding for both our DecisionTreeLearning algorithm and scikit-learn. This could provide a more comparable baseline comparison.
 
 We would also like to implement $\chi^2$ pruning to examine how using both or either of these pruning methods impacts average error.
@@ -183,7 +185,7 @@ Alic was responsible for implementing the decision tree learning algorithm, the 
 
 \subsection{Willem}
 
-Willem worked primarily on decision tree creation, data file read in, and model selection in OCaml. He created a data reader for CSV files, which was used by all of the OCaml binaries (\texttt{dtl}, \texttt{classifier}, and the OCaml-based model selection program). He helped program the \texttt{dtl} executable, which reads in a data file for the training data, then creates a decision tree. He also wrote up hard coded large amounts of information about the different sets of data, including information about the attributes, their possible values, the possible classification, etc. He also created the OCaml version of model selection using $k$-fold cross-validation, which takes in various optional and required command line arguments and prints out the selected tree, error rate in the training set, error rate in the validation set, and the chosen max depth. He also elected to be the project recorder.
+Willem worked primarily on decision tree creation, data file read in, and model selection in OCaml. He created a data reader for CSV files, which was used by all of the OCaml binaries (\texttt{dtl}, \texttt{classify}, and the OCaml-based model selection program). He helped program the \texttt{dtl} executable, which reads in a data file for the training data, then creates a decision tree. He also wrote up hard coded large amounts of information about the different sets of data, including information about the attributes, their possible values, the possible classification, etc. He also created the OCaml version of model selection using $k$-fold cross-validation, which takes in various optional and required command line arguments and prints out the selected tree, error rate in the training set, error rate in the validation set, and the chosen max depth. He also elected to be the project recorder.
 
 \subsection{Diego}
 
@@ -194,7 +196,7 @@ Diego's primary focus was on writing and testing the classifier specified in the
 %% identification of the section in the article metadata, and the
 %% consistent spelling of the heading.
 \begin{acks}
-This work was supported in part by the University of Iowa.
+The authors wish to thank the University of Iowa for providing access to ACM journal articles.
 \end{acks}
 
 \bibliographystyle{ACM-Reference-Format}
