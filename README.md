@@ -24,20 +24,6 @@ pip3 install pandas sklearn
 
 ## How To Run
 
-### Python Script
-
-The Python script expects that the two OCaml programs (`dtl` and `classify`) have already been built with the names `dtl.exe` and `classify.exe`, and that the two executables are located in the folder `./_build/default/bin/`. If this is not the case, Python will throw an error.
-
-To run the Python script, run the following at the project root:
-
-```bash
-python3 -u ./scripts/experiment.py
-```
-
-This will run k-fold cross-validation on both our decision tree algorithm and the decision tree algorithm provided by scikit-learn. It prints the # of data points, the # of attributes, and the accuracy and error rate using k-fold cross-validation. The following displays a comparison for cross-validation run on the mushrooms dataset.
-
-![An example run with no depth constraints on the mushrooms data set](https://i.imgur.com/aBzk3SR.png)
-
 ### DTL
 
 #### Basic Use
@@ -100,14 +86,30 @@ dune exec ./bin/dtl.exe -- -w [PATH] -p [FLAG] [path to input file]
 ### Classifier
 
 ##### Printing classifications to standard out
+
 To run the classification executable as specified in the project spec type the following:
+
 ```bash
 dune exec ./bin/classify.exe -- [path to decision tree] [path to dataset]
 ```
+
 ##### Option to write classifications to a file
+
 ```bash
 dune exec ./bin/classify.exe -- -w [PATH] [path to decision tree] [path to dataset]
 ```
+
+### experiment.py
+
+The Python script expects that the two OCaml programs (`dtl` and `classify`) have already been built with the names `dtl.exe` and `classify.exe`, and that the two executables are located in the folder `./_build/default/bin/`. If this is not the case, Python will throw an error.
+
+To run the Python script, run the following at the project root:
+
+```bash
+python3 -u ./scripts/experiment.py
+```
+
+This will run k-fold cross-validation on both our decision tree algorithm and the decision tree algorithm provided by scikit-learn. It will run through each possible dataset and run cross-validation 100 times for both our algorithm and scikit-learn's decision tree algorithm. The errors will be stored in `data.csv` in the root directory.
 
 ## Roles
 
