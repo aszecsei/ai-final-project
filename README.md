@@ -77,11 +77,24 @@ dune exec ./bin/dtl.exe -- -w [PATH] [FLAG] [path to input file]
 dune exec ./bin/dtl.exe -- --dest=[PATH] [FLAG] [path to input file]
 ```
 
+##### limit the max depth (part 2 of project)
+
+If you want to limit the depth of the tree you can do the following
+
+```bash
+dune exec ./bin/dtl.exe -- -d [MAX DEPTH] [FLAG] [path to input file]
+dune exec ./bin/dtl.exe -- --depth=[MAX DEPTH] [FLAG] [path to input file]
+```
+
 ##### Combining Options:
+
+as an example of how to combine options here is how you'd combine 'Write tree to file' and 'Readable tree'
 
 ```bash
 dune exec ./bin/dtl.exe -- -w [PATH] -p [FLAG] [path to input file]
 ```
+
+see `dune exec ./bin/dtl.exe -- --help` for more options
 
 ### Classifier
 
@@ -98,6 +111,16 @@ dune exec ./bin/classify.exe -- [path to decision tree] [path to dataset]
 ```bash
 dune exec ./bin/classify.exe -- -w [PATH] [path to decision tree] [path to dataset]
 ```
+
+### ocaml Model selection using k-fold cross validation
+
+##### normal execution
+
+```bash
+dune exec ./bin/modelSelection.exe -- [FLAG] [path to input file]
+```
+
+see `dune exec ./bin/modelSelection.exe -- --help` for more options
 
 ### experiment.py
 
